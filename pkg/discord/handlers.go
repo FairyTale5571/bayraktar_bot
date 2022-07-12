@@ -2,6 +2,7 @@ package discord
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"strings"
 )
 
 func (d *Discord) onBotUp(s *discordgo.Session, r *discordgo.Ready) {
@@ -10,6 +11,46 @@ func (d *Discord) onBotUp(s *discordgo.Session, r *discordgo.Ready) {
 }
 
 func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// ignore messages from bots
+	if m.Author.Bot {
+		return
+	}
+
+	// catch discord boosters
+	switch m.Message.Type {
+	case discordgo.MessageTypeGuildMemberJoin:
+
+	case discordgo.MessageTypeUserPremiumGuildSubscriptionTierOne:
+		fallthrough
+	case discordgo.MessageTypeUserPremiumGuildSubscriptionTierTwo:
+		fallthrough
+	case discordgo.MessageTypeUserPremiumGuildSubscriptionTierThree:
+		fallthrough
+	case discordgo.MessageTypeUserPremiumGuildSubscription:
+		// TODO: booster present
+	case discordgo.MessageTypeDefault:
+		fallthrough
+	case discordgo.MessageTypeReply:
+		// TODO: mute player
+	}
+
+	if strings.HasPrefix(m.Content, "!") {
+
+		var vars []string
+		var content string
+		inputSplit := strings.Split(m.Content, " ")
+		for idx := range inputSplit {
+			if idx == 0 {
+				content = inputSplit[idx]
+			} else {
+				vars = append(vars, inputSplit[idx])
+			}
+		}
+		switch content {
+		case "!help":
+		}
+	}
+
 	return
 }
 
