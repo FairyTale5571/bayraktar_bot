@@ -59,10 +59,12 @@ func (d *Discord) onUserChanged(s *discordgo.Session, i *discordgo.GuildMemberUp
 }
 
 func (d *Discord) onUserConnected(s *discordgo.Session, i *discordgo.GuildMemberAdd) {
+	d.logger.Infof("user %s connected to server %s", i.User.Username, i.GuildID)
 	return
 }
 
-func (d *Discord) onUserDisconnected(s *discordgo.Session, i *discordgo.MessageReactionAdd) {
+func (d *Discord) onUserDisconnected(s *discordgo.Session, i *discordgo.GuildMemberRemove) {
+	d.logger.Infof("user %s disconnected to server %s", i.User.Username, i.GuildID)
 	return
 }
 
