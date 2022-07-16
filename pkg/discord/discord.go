@@ -5,6 +5,8 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/database"
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
+	"github.com/fairytale5571/bayraktar_bot/pkg/steam"
+	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 )
 
 type Discord struct {
@@ -12,14 +14,25 @@ type Discord struct {
 	logger *logger.LoggerWrapper
 	ds     *discordgo.Session
 	db     *database.DB
+	rdb    *redis.Redis
+	steam  *steam.Steam
 }
 
 func New(cfg *models.Config, db *database.DB) (*Discord, error) {
 	res := &Discord{
 		cfg:    cfg,
 		db:     db,
+		steam:  steam.New(cfg),
 		logger: logger.New("discord"),
 	}
+	rdb, err := redis.New(cfg.RedisUri)
+	if err != nil {
+		res.logger.Fatalf("cant create redis client: %v", err)
+		return nil, err
+	}
+	res.logger.Info("redis started")
+	res.rdb = rdb
+
 	s, err := discordgo.New("Bot " + res.cfg.DiscordToken)
 	if err != nil {
 		res.logger.Fatalf("cant create discord session: %v", err)
@@ -38,6 +51,7 @@ func (d *Discord) Start() {
 		d.logger.Fatalf("cant open discord session: %v", err)
 		return
 	}
+	go d.refreshAll()
 	d.logger.Info("discord started")
 }
 

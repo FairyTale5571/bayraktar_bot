@@ -2,6 +2,7 @@ package discord
 
 import (
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -46,9 +47,14 @@ func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCrea
 		}
 		switch content {
 		case "!help":
+		case "!login":
+			if d.isAdmin(m.ChannelID, m.Author.ID) {
+				d.printLogin(m.ChannelID)
+			}
+		case "!update":
+			d.checkUpdate()
 		}
 	}
-
 	return
 }
 
@@ -82,6 +88,24 @@ func (d *Discord) onCommandsCall(s *discordgo.Session, i *discordgo.InteractionC
 	case discordgo.InteractionApplicationCommand:
 		if h, ok := d.commands()[i.ApplicationCommandData().Name]; ok {
 			h(s, i)
+		}
+	case discordgo.InteractionMessageComponent:
+		if h, ok := d.components()[i.MessageComponentData().CustomID]; ok {
+			h(s, i)
+		}
+	}
+}
+
+func (d *Discord) refreshAll() {
+	ticker := time.NewTicker(10 * time.Second)
+	quit := make(chan struct{})
+	for {
+		select {
+		case <-ticker.C:
+			go d.checkUpdate()
+		case <-quit:
+			ticker.Stop()
+			return
 		}
 	}
 }

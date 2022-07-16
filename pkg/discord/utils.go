@@ -228,3 +228,7 @@ func randInt() int {
 func generatePlateNumber() string {
 	return fmt.Sprintf("DS %d %v", randInt(), randStringRune(2))
 }
+
+func secondsToDate(seconds uint64) string {
+	return fmt.Sprintf("%d дней %d часов %d минут", seconds/86400, (seconds%86400)/3600, (seconds%3600)/60)
+}

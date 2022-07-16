@@ -3,5 +3,6 @@ package storage
 type Bucket string
 
 const (
-	UsersMuted Bucket = "muted_users"
+	UsersMuted   Bucket = "muted_users"
+	LastWsUpdate Bucket = "last_ws_update"
 )

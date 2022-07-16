@@ -13,6 +13,7 @@ type Config struct {
 	TelegramToken string `env:"TELEGRAM_TOKEN"`
 
 	MysqlUri string `env:"MYSQL_URI,required"`
+	RedisUri string `env:"REDISCLOUD_URL,required"`
 
 	URL   string `env:"URL,required"`
 	PORT  string `env:"PORT,required"`
