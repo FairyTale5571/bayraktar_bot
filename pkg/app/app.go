@@ -8,28 +8,40 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 )
 
-func New() error {
+type App struct {
+	Discord *discord.Discord
+	DB      *database.DB
+	Config  *models.Config
+	Logger  *logger.LoggerWrapper
+}
+
+func New() (*App, error) {
 	log := logger.New("application")
 
-	cfg := models.Config{}
-	if err := env.Parse(&cfg); err != nil {
+	cfg := &models.Config{}
+	if err := env.Parse(cfg); err != nil {
 		log.Errorf("error parse config: %v", err)
-		return err
+		return nil, err
 	}
 
 	db, err := database.New(cfg.MysqlUri)
 	if err != nil {
 		log.Errorf("error start database: %v", err)
-		return err
+		return nil, err
 	}
 
-	ds, err := discord.New(&cfg, db)
+	ds, err := discord.New(cfg, db)
 	if err != nil {
 		log.Fatalf("error start discord: %v", err)
-		return err
+		return nil, err
 	}
 
 	go ds.Start()
 	log.Info("application started")
-	return nil
+	return &App{
+		Discord: ds,
+		DB:      db,
+		Config:  cfg,
+		Logger:  log,
+	}, nil
 }
