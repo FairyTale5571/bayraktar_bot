@@ -60,7 +60,8 @@ func (db *DB) startMigrate() {
 	   PRIMARY KEY (id)
 	);`)
 	if err != nil {
-		db.logger.Errorf("error create migrations table: %v", err)
+		db.logger.Fatalf("error create migrations table: %v", err)
+		return
 	}
 
 	files, err := ioutil.ReadDir("migrates")
@@ -79,6 +80,9 @@ func (db *DB) startMigrate() {
 				db.logger.Errorf("error read migrates file: %v", err)
 			}
 			_, err = db.Exec("INSERT INTO migrations (version, time) VALUES (?, now())", name)
+			if err != nil {
+				db.logger.Errorf("error migrate: %v", err)
+			}
 			_, err = db.Exec(string(read))
 			if err != nil {
 				db.logger.Errorf("error migrate: %v", err)

@@ -50,3 +50,11 @@ func (d *Discord) setupHandlers() {
 	d.ds.AddHandler(d.onUserDisconnected)
 	d.ds.AddHandler(d.onGuildCreate)
 }
+
+func (d *Discord) Stop() {
+	err := d.ds.Close()
+	if err != nil {
+		d.logger.Errorf("cant close discord session: %v", err)
+		return
+	}
+}

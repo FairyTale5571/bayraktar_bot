@@ -3,7 +3,7 @@ package models
 import (
 	"os"
 
-	discord "github.com/ravener/discord-oauth2"
+	discordoauth "github.com/ravener/discord-oauth2"
 	"golang.org/x/oauth2"
 )
 
@@ -24,7 +24,7 @@ var (
 		RedirectURL:  os.Getenv("URL") + "/auth/discord/callback",
 		ClientID:     os.Getenv("DISCORD_CLIENT"),
 		ClientSecret: os.Getenv("DISCORD_SECRET"),
-		Scopes:       []string{discord.ScopeIdentify, discord.ScopeGuilds},
-		Endpoint:     discord.Endpoint,
+		Scopes:       []string{discordoauth.ScopeIdentify, discordoauth.ScopeGuilds},
+		Endpoint:     discordoauth.Endpoint,
 	}
 )

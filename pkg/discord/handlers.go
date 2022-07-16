@@ -1,8 +1,9 @@
 package discord
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 func (d *Discord) onBotUp(s *discordgo.Session, r *discordgo.Ready) {
@@ -18,19 +19,16 @@ func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCrea
 
 	// catch discord boosters
 	switch m.Message.Type {
-	case discordgo.MessageTypeGuildMemberJoin:
-
-	case discordgo.MessageTypeUserPremiumGuildSubscriptionTierOne:
-		fallthrough
-	case discordgo.MessageTypeUserPremiumGuildSubscriptionTierTwo:
-		fallthrough
-	case discordgo.MessageTypeUserPremiumGuildSubscriptionTierThree:
-		fallthrough
-	case discordgo.MessageTypeUserPremiumGuildSubscription:
-		// TODO: booster present
-	case discordgo.MessageTypeDefault:
-		fallthrough
-	case discordgo.MessageTypeReply:
+	case
+		discordgo.MessageTypeGuildMemberJoin:
+	case
+		discordgo.MessageTypeUserPremiumGuildSubscriptionTierOne,
+		discordgo.MessageTypeUserPremiumGuildSubscriptionTierTwo,
+		discordgo.MessageTypeUserPremiumGuildSubscriptionTierThree,
+		discordgo.MessageTypeUserPremiumGuildSubscription:
+	// TODO: booster present
+	case
+		discordgo.MessageTypeDefault, discordgo.MessageTypeReply:
 		// TODO: mute player
 	}
 
@@ -80,7 +78,6 @@ func (d *Discord) onGuildCreate(s *discordgo.Session, g *discordgo.GuildCreate) 
 }
 
 func (d *Discord) onCommandsCall(s *discordgo.Session, i *discordgo.InteractionCreate) {
-
 	switch i.Type {
 	case discordgo.InteractionApplicationCommand:
 		if h, ok := d.commands()[i.ApplicationCommandData().Name]; ok {
