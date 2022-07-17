@@ -16,7 +16,7 @@ type Config struct {
 	RedisUri string `env:"REDISCLOUD_URL,required"`
 
 	URL   string `env:"URL,required"`
-	PORT  string `env:"PORT,required"`
+	PORT  string `env:"PORT" envDefault:"3000"`
 	Debug bool   `env:"DEBUG,required"`
 }
 
