@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/fairytale5571/bayraktar_bot/pkg/bot"
+	"github.com/fairytale5571/bayraktar_bot/pkg/discord"
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"github.com/gin-gonic/gin"
@@ -10,8 +10,8 @@ import (
 
 type Router struct {
 	router   *gin.Engine
-	bot      *bot.Bot
 	cfg      *models.Config
+	bot      *discord.Discord
 	logger   *logger.LoggerWrapper
 	settings AuthConfig
 }
@@ -20,7 +20,7 @@ type AuthConfig struct {
 	DiscordConfig oauth2.Config
 }
 
-func New(cfg *models.Config, bot *bot.Bot) *Router {
+func New(cfg *models.Config, bot *discord.Discord) *Router {
 	r := Router{
 		bot:    bot,
 		cfg:    cfg,
@@ -43,6 +43,10 @@ func (r *Router) Start() {
 		r.logger.Errorf("cant open gin engine: %v", err)
 		return
 	}
+}
+
+func (r *Router) Stop() {
+	// TODO: implement
 }
 
 func (r *Router) mainRouter() {

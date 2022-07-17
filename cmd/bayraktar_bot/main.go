@@ -24,6 +24,6 @@ func main() {
 		return
 	}
 	app.Discord.Stop()
-
+	app.Server.Stop()
 	log.Fatalf("Graceful shutdown\n************************************************************************\n\n")
 }
