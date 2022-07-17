@@ -32,3 +32,11 @@ type PlayerData struct {
 	LastConnected time.Time
 	TotalTime     uint64
 }
+
+type gov struct {
+	Gov struct {
+		Info struct {
+			All int `json:"all"`
+		} `json:"info"`
+	} `json:"gov"`
+}

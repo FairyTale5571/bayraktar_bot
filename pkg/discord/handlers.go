@@ -68,7 +68,7 @@ func (d *Discord) onUserConnected(s *discordgo.Session, i *discordgo.GuildMember
 }
 
 func (d *Discord) onUserDisconnected(s *discordgo.Session, i *discordgo.GuildMemberRemove) {
-	d.logger.Infof("user %s disconnected to server %s", i.User.Username, i.GuildID)
+	d.logger.Infof("user %s disconnected from server %s", i.User.Username, i.GuildID)
 	return
 }
 
@@ -97,12 +97,14 @@ func (d *Discord) onCommandsCall(s *discordgo.Session, i *discordgo.InteractionC
 }
 
 func (d *Discord) refreshAll() {
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(120 * time.Second)
 	quit := make(chan struct{})
 	for {
 		select {
 		case <-ticker.C:
 			go d.checkUpdate()
+			go d.listenQueue()
+			go d.updateStats()
 		case <-quit:
 			ticker.Stop()
 			return
