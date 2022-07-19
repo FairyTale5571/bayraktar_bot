@@ -221,7 +221,6 @@ func (d *Discord) printPrivateMessage(userId, text string) {
 
 func (d *Discord) RegisterUser(guildId, userId, steamId string) {
 	var _userId string
-	fmt.Printf("RegisterUser: %s %s %s\n", guildId, userId, steamId)
 	_ = d.db.QueryRow("SELECT id FROM discord_users WHERE uid = ? limit 1", steamId).Scan(&_userId)
 	if _userId != "" {
 		d.printPrivateMessage(userId, "Этот Steam аккаунт уже зарегистрирован")
@@ -240,6 +239,11 @@ func (d *Discord) RegisterUser(guildId, userId, steamId string) {
 	_, err = d.db.Exec("INSERT INTO discord_users (uid, discord_uid, discord_name, discord_discriminator) VALUES (?, ?, ?, ?)", steamId, user.User.ID, user.User.Username, user.User.Discriminator)
 	if err != nil {
 		d.logger.Errorf("RegisterUser(): cant insert user %s", err.Error())
+		return
+	}
+	err = d.ds.GuildMemberRoleAdd(guildId, userId, "864630308242849825")
+	if err != nil {
+		d.logger.Errorf("RegisterUser(): cant add role %s", err.Error())
 		return
 	}
 	d.printPrivateMessage(userId, "Вы успешно зарегистрированы в сервере!\nДоступ к каналам предоставлен!")

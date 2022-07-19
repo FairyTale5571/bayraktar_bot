@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
@@ -80,7 +81,8 @@ func (s *Steam) GetLatestUpdate(itemId string) (update, id string) {
 		func(i int, s *goquery.Selection) bool {
 			text := s.Find("p")
 			_id, _ := text.Attr("id")
-			update = text.Text()
+			html, _ := text.Html()
+			update = strings.ReplaceAll(html, "<br/>", "\n")
 			id = _id
 			return false
 		})
@@ -98,16 +100,16 @@ func (s *Steam) GetItemTitle(itemId string) {
 	sel.Text()
 }
 
-func (s *Steam) GetItemLogo(itemId string) {
+func (s *Steam) GetItemLogo(itemId string) (logo string) {
 	doc := s.workshopInfo(itemId)
 	doc.Find("head link").Each(
 		func(i int, s *goquery.Selection) {
 			if val, exist := s.Attr("rel"); val == "image_src" && exist {
-				href := s.AttrOr("href", "")
-				fmt.Printf("%d: %s\n", i, href)
+				logo = s.AttrOr("href", "")
 			}
 		},
 	)
+	return logo
 }
 
 func (s *Steam) GetItemSize(itemId string) {
