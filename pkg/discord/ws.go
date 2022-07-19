@@ -19,6 +19,7 @@ func (d *Discord) checkUpdate() {
 		return
 	}
 	if text == "" {
+		d.logger.Warnf("checkUpdate(): Empty update")
 		return
 	}
 	d.printUpdate(text)

@@ -100,7 +100,7 @@ func (d *Discord) onCommandsCall(s *discordgo.Session, i *discordgo.InteractionC
 }
 
 func (d *Discord) refreshAll() {
-	ticker := time.NewTicker(120 * time.Second)
+	ticker := time.NewTicker(60 * time.Second)
 	quit := make(chan struct{})
 	for {
 		select {

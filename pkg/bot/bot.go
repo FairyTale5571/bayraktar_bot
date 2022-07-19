@@ -12,15 +12,4 @@ type Bot struct {
 	updates tgbotapi.UpdatesChannel
 }
 
-func New() {
-
-}
-
-const (
-	updateOffset  = 0
-	updateTimeout = 64
-)
-
-func (b *Bot) Start() {
-
-}
+// TODO: telegram bot
