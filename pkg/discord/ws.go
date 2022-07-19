@@ -19,7 +19,7 @@ func (d *Discord) checkUpdate() {
 		return
 	}
 	if text == "" {
-		text = "Незначительные изменения"
+		return
 	}
 	d.printUpdate(text)
 }
