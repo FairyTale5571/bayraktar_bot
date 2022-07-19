@@ -56,27 +56,26 @@ func (s *Steam) workshopChangelogs(itemId string) *goquery.Document {
 	defer res.Body.Close() // nolint: not needed
 
 	if err != nil {
-		log.Fatalf("cant get workshop info: %v", err)
+		s.logger.Errorf("cant get workshop info: %v", err)
 		return nil
 	}
 
 	if res.StatusCode != http.StatusOK {
-		log.Fatalf("cant get workshop info: %v", res.StatusCode)
+		s.logger.Errorf("cant get workshop info: %v", res.StatusCode)
 		return nil
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		log.Fatalf("cant get workshop info: %v", err)
+		s.logger.Errorf("cant get workshop info: %v", err)
 		return nil
 	}
 	return doc
 
 }
 
-func (s *Steam) GetLatestUpdate(itemId string) (string, string) {
+func (s *Steam) GetLatestUpdate(itemId string) (update, id string) {
 	doc := s.workshopChangelogs(itemId)
-	var update, id string
 	doc.Find(".workshopAnnouncement").EachWithBreak(
 		func(i int, s *goquery.Selection) bool {
 			text := s.Find("p")

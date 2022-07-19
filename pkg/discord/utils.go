@@ -252,7 +252,7 @@ func (d *Discord) deleteUser(userId string) {
 	}
 }
 
-func (d *Discord) printWelcome(userID string, guildID string) {
+func (d *Discord) printWelcome(userID, guildID string) {
 	guild, err := d.ds.Guild(guildID)
 	if err != nil {
 		d.logger.Errorf("printWelcome(): cant get guild %s", err.Error())

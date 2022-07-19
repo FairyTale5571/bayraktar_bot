@@ -23,6 +23,7 @@ type PlayerData struct {
 	GroupLevelName sql.NullString
 	TotalTime      uint64
 	Id             int
+	GroupID        int
 	RC             uint32
 	Cash           uint32
 	Bank           uint32

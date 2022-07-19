@@ -22,7 +22,7 @@ func (d *Discord) listenQueue() {
 		var queue []*player
 
 		rows, err := d.db.Query("select discord_users.discord_uid, discord_users.uid from discord_users inner join discord_queue dq on discord_users.uid = dq.uid")
-		//defer rows.Close()
+		defer rows.Close()
 		if err != nil {
 			d.logger.Errorf("Error getting queue: %s", err.Error())
 			return nil
@@ -85,11 +85,12 @@ func (d *Discord) getLkApi() (*gov, error) {
 	var players gov
 	var client http.Client
 	resp, err := client.Get("https://lk.rimasrp.life/api/gov")
+	defer resp.Body.Close() // nolint: not needed
+
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := io.ReadAll(resp.Body)

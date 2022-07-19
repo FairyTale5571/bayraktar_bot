@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -65,7 +66,7 @@ func (d *Discord) commandGetHim(s *discordgo.Session, i *discordgo.InteractionCr
 	}
 	_id, err := d.getUserSteamId(user.ID)
 	if err != nil {
-		d.logger.Errorf("commandGetHim(): %s", err.Error())
+		d.logger.Infof("commandGetHim(): %s", err.Error())
 		d.printHiddenMessageInteraction(i, "Ошибка при получении SteamID")
 		return
 	}
@@ -77,6 +78,7 @@ func (d *Discord) commandGetHim(s *discordgo.Session, i *discordgo.InteractionCr
 		return
 	}
 
+	fmt.Printf("%+v\n", _player)
 	d.printHiddenEmbedInteraction(i, &discordgo.MessageEmbed{
 		Title: "Пользователь",
 		Fields: []*discordgo.MessageEmbedField{
@@ -86,7 +88,7 @@ func (d *Discord) commandGetHim(s *discordgo.Session, i *discordgo.InteractionCr
 			{Name: "ФНИ:", Value: fmt.Sprintf("%s '%s' %s", _player.FirstName.String, _player.NickName.String, _player.LastName.String)},
 			{Name: "Дата регистрации:", Value: _player.InsertTime.Format("02.01.2006 15:04:05")},
 			{Name: "Дата последнего входа:", Value: _player.LastConnected.Format("02.01.2006 15:04:05")},
-			{Name: "Всего времени в игре:", Value: fmt.Sprintf("%s", secondsToDate(_player.TotalTime))},
+			{Name: "Всего времени в игре:", Value: secondsToDate(_player.TotalTime)},
 
 			{Name: "Наличных:", Value: fmt.Sprintf("$%d", _player.Cash), Inline: true},
 			{Name: "В банке:", Value: fmt.Sprintf("$%d", _player.Bank), Inline: true},

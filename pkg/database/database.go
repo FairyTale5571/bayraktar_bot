@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"io/ioutil"
+	"os"
 
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	_ "github.com/go-sql-driver/mysql"
@@ -64,7 +64,7 @@ func (db *DB) startMigrate() {
 		return
 	}
 
-	files, err := ioutil.ReadDir("migrates")
+	files, err := os.ReadDir("migrates")
 	if err != nil {
 		db.logger.Errorf("error read migrates files: %v", err)
 	}
@@ -75,7 +75,7 @@ func (db *DB) startMigrate() {
 		name := file.Name()
 		if !db.isMigrated(name) {
 
-			read, err := ioutil.ReadFile("migrates/" + name)
+			read, err := os.ReadFile("migrates/" + name)
 			if err != nil {
 				db.logger.Errorf("error read migrates file: %v", err)
 			}
