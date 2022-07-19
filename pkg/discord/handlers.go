@@ -46,12 +46,13 @@ func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCrea
 			}
 		}
 		switch content {
-		case "!help":
-		case "!login":
+		case "!help_zxc":
+			d.printWelcome(m.Author.ID, m.GuildID)
+		case "!login_zxc":
 			if d.isAdmin(m.ChannelID, m.Author.ID) {
 				d.printLogin(m.ChannelID)
 			}
-		case "!update":
+		case "!update_zxc":
 			d.checkUpdate()
 		}
 	}

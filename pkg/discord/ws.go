@@ -35,7 +35,7 @@ func (d *Discord) printUpdate(update string) {
 			{Name: "Внесенные изменения:", Value: update},
 		},
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: "http://i.imgur.com/fkuPE2b.gif",
+			URL: "https://i.imgur.com/fkuPE2b.gif",
 		},
 		Timestamp: "",
 	}

@@ -78,7 +78,6 @@ func (d *Discord) commandGetHim(s *discordgo.Session, i *discordgo.InteractionCr
 		return
 	}
 
-	fmt.Printf("%+v\n", _player)
 	d.printHiddenEmbedInteraction(i, &discordgo.MessageEmbed{
 		Title: "Пользователь",
 		Fields: []*discordgo.MessageEmbedField{

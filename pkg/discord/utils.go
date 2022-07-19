@@ -268,12 +268,16 @@ func (d *Discord) printWelcome(userID, guildID string) {
 		return
 	}
 	embed := &discordgo.MessageEmbed{
+		Type:  discordgo.EmbedTypeImage,
 		Title: "Добро пожаловать на сервер **" + guild.Name + "**!",
 		Description: "Чтобы получить полный доступ к серверу, тебе нужно привязать твой аккаунт к нашему серверу!\n" +
 			"Сделать это можно по кнопке ниже!\n" +
 			"Не забудь ознакомится с правилами поведения в игре\n\n" +
 			"Прочувствуй атмосферу удивительного мира ролевой игры с реалистичным миром!",
 		Color: 0x00ff00,
+		Image: &discordgo.MessageEmbedImage{
+			URL: d.steam.GetItemLogo("1368860933"),
+		},
 	}
 	msg := &discordgo.MessageSend{
 		Embed: embed,
@@ -320,12 +324,10 @@ func (d *Discord) printWelcome(userID, guildID string) {
 			},
 		},
 	}
-
 	_, err = d.ds.ChannelMessageSendComplex(channel.ID, msg)
 	if err != nil {
 		d.logger.Errorf("printWelcome(): cant send message %s", err.Error())
 	}
-
 }
 
 var letters = []rune("ABEIKMHOPCTXZ")
