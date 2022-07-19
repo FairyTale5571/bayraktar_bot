@@ -8,6 +8,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
+	"github.com/markbates/goth/providers/steam"
 )
 
 const (
@@ -118,4 +119,20 @@ func (s *Steam) GetItemSize(itemId string) {
 			fmt.Printf("%d: %s\n", i, text)
 		},
 	)
+}
+
+func (s *Steam) GetAuthLink(guild, state string) string {
+	client := steam.New(s.cfg.SteamKey, s.cfg.URL+"/auth/steam/?guild="+guild+"&state="+state)
+	session, err := client.BeginAuth(state)
+	if err != nil {
+		s.logger.Errorf("cant get auth link: %v", err)
+		return ""
+	}
+
+	url, err := session.GetAuthURL()
+	if err != nil {
+		s.logger.Errorf("cant get auth link: %v", err)
+		return ""
+	}
+	return url
 }
