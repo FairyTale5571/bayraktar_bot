@@ -12,25 +12,21 @@ type Vehicles struct {
 }
 
 type PlayerData struct {
-	Id  int
-	Uid string
-
-	Name      string
-	NickName  sql.NullString
-	FirstName sql.NullString
-	LastName  sql.NullString
-
-	Cash uint32
-	Bank uint32
-	RC   uint32
-
+	LastConnected  time.Time
+	InsertTime     time.Time
+	Uid            string
+	Name           string
+	NickName       sql.NullString
+	FirstName      sql.NullString
+	LastName       sql.NullString
 	GroupName      sql.NullString
-	GroupLevel     uint16
 	GroupLevelName sql.NullString
-
-	InsertTime    time.Time
-	LastConnected time.Time
-	TotalTime     uint64
+	TotalTime      uint64
+	Id             int
+	RC             uint32
+	Cash           uint32
+	Bank           uint32
+	GroupLevel     uint16
 }
 
 type gov struct {

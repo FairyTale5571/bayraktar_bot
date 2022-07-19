@@ -30,7 +30,7 @@ func New(cfg *models.Config) *Steam {
 
 func (s *Steam) workshopInfo(itemId string) *goquery.Document {
 	res, err := http.Get(EndpointSteamWorkshop + "/?id=" + itemId)
-	defer res.Body.Close() // nolint: errcheck
+	defer res.Body.Close() // nolint: not needed
 	if err != nil {
 		log.Fatalf("cant get workshop info: %v", err)
 		return nil
@@ -52,11 +52,12 @@ func (s *Steam) workshopInfo(itemId string) *goquery.Document {
 
 func (s *Steam) workshopChangelogs(itemId string) *goquery.Document {
 	res, err := http.Get(EndpointSteamWorkshopChangelog + "/" + itemId)
+	defer res.Body.Close() // nolint: not needed
+
 	if err != nil {
 		log.Fatalf("cant get workshop info: %v", err)
 		return nil
 	}
-	defer res.Body.Close() // nolint: errcheck
 
 	if res.StatusCode != http.StatusOK {
 		log.Fatalf("cant get workshop info: %v", res.StatusCode)

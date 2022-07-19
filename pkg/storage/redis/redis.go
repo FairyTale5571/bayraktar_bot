@@ -34,7 +34,7 @@ func (r *Redis) Get(key string, bucket storage.Bucket) (string, error) {
 	return r.db.Get(ctx, fmt.Sprintf("%s::%s", bucket, key)).Result()
 }
 
-func (r *Redis) Set(key string, value string, bucket storage.Bucket) error {
+func (r *Redis) Set(key, value string, bucket storage.Bucket) error {
 	return r.db.Set(ctx, fmt.Sprintf("%s::%s", bucket, key), value, 0).Err()
 }
 

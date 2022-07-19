@@ -38,13 +38,13 @@ func New() (*App, error) {
 		return nil, err
 	}
 
-	server := server.New(cfg, ds)
+	srv := server.New(cfg, ds)
 	if err != nil {
 		log.Errorf("error start server: %v", err)
 		return nil, err
 	}
 
-	go server.Start()
+	go srv.Start()
 	go ds.Start()
 	log.Info("application started")
 	return &App{
@@ -52,6 +52,6 @@ func New() (*App, error) {
 		DB:      db,
 		Config:  cfg,
 		Logger:  log,
-		Server:  server,
+		Server:  srv,
 	}, nil
 }
