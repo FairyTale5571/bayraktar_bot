@@ -1,6 +1,9 @@
 package server
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/fairytale5571/bayraktar_bot/pkg/discord"
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
@@ -50,5 +53,26 @@ func (r *Router) Stop() {
 }
 
 func (r *Router) mainRouter() {
+	r.router.GET("/auth/steam", r.steam)
+}
 
+func (r *Router) steam(c *gin.Context) {
+	r.logger.Info("steam auth")
+
+	state := c.Request.URL.Query().Get("state")
+	guild := c.Request.URL.Query().Get("guild")
+	steamId := c.Request.URL.Query().Get("openid.claimed_id")
+	if steamId == "" {
+		r.logger.Error("steam auth failed")
+		c.JSON(http.StatusForbidden, gin.H{
+			"message": "steam auth failed",
+		})
+		return
+	}
+	steamId = strings.TrimLeft(steamId, "https://steamcommunity.com/openid/id/")
+	r.logger.Infof("steam auth: %v | %v", state, steamId)
+	r.bot.RegisterUser(guild, state, steamId)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+	})
 }

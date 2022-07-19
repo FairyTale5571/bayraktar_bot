@@ -207,6 +207,124 @@ func (d *Discord) getPlayerInformation(steamId string) *PlayerData {
 	return &_player
 }
 
+func (d *Discord) printPrivateMessage(userId, text string) {
+	channel, err := d.ds.UserChannelCreate(userId)
+	if err != nil {
+		d.logger.Errorf("printPrivateMessage(): cant create channel %s", err.Error())
+		return
+	}
+	_, err = d.ds.ChannelMessageSend(channel.ID, text)
+	if err != nil {
+		d.logger.Errorf("printPrivateMessage(): cant send message %s", err.Error())
+		return
+	}
+}
+
+func (d *Discord) RegisterUser(guildId, userId, steamId string) {
+	var _userId string
+	fmt.Printf("RegisterUser: %s %s %s\n", guildId, userId, steamId)
+	_ = d.db.QueryRow("SELECT id FROM discord_users WHERE uid = ? limit 1", steamId).Scan(&_userId)
+	if _userId != "" {
+		d.printPrivateMessage(userId, "Этот Steam аккаунт уже зарегистрирован")
+		return
+	}
+	_ = d.db.QueryRow("SELECT uid FROM players WHERE playerid = ? limit 1", steamId).Scan(&_userId)
+	if _userId == "" {
+		d.printPrivateMessage(userId, "Мы не нашли ваш Steam аккаунт в базе данных\nВероятно это из-за того, что вы еще не играли на сервере")
+		return
+	}
+	user, err := d.ds.GuildMember(guildId, userId)
+	if err != nil {
+		d.logger.Errorf("RegisterUser(): cant get user %s", err.Error())
+		return
+	}
+	_, err = d.db.Exec("INSERT INTO discord_users (uid, discord_uid, discord_name, discord_discriminator) VALUES (?, ?, ?, ?)", steamId, user.User.ID, user.User.Username, user.User.Discriminator)
+	if err != nil {
+		d.logger.Errorf("RegisterUser(): cant insert user %s", err.Error())
+		return
+	}
+	d.printPrivateMessage(userId, "Вы успешно зарегистрированы в сервере!\nДоступ к каналам предоставлен!")
+}
+
+func (d *Discord) deleteUser(userId string) {
+	_, err := d.db.Exec("DELETE FROM discord_users WHERE discord_uid = ?", userId)
+	if err != nil {
+		d.logger.Errorf("deleteUser(): cant delete user %s", err.Error())
+	}
+}
+
+func (d *Discord) printWelcome(userID string, guildID string) {
+	guild, err := d.ds.Guild(guildID)
+	if err != nil {
+		d.logger.Errorf("printWelcome(): cant get guild %s", err.Error())
+		return
+	}
+	channel, err := d.ds.UserChannelCreate(userID)
+	if err != nil {
+		d.logger.Errorf("printWelcome(): cant create channel %s", err.Error())
+		return
+	}
+	embed := &discordgo.MessageEmbed{
+		Title: "Добро пожаловать на сервер **" + guild.Name + "**!",
+		Description: "Чтобы получить полный доступ к серверу, тебе нужно привязать твой аккаунт к нашему серверу!\n" +
+			"Сделать это можно по кнопке ниже!\n" +
+			"Не забудь ознакомится с правилами поведения в игре\n\n" +
+			"Прочувствуй атмосферу удивительного мира ролевой игры с реалистичным миром!",
+		Color: 0x00ff00,
+	}
+	msg := &discordgo.MessageSend{
+		Embed: embed,
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label: "Привязать аккаунт",
+						URL:   d.steam.GetAuthLink(guildID, userID),
+						Style: discordgo.LinkButton,
+						Emoji: discordgo.ComponentEmoji{
+							Name: "🔗",
+						},
+					},
+					discordgo.Button{
+						Label:    "Как начать играть?",
+						Style:    discordgo.SuccessButton,
+						CustomID: "how_to_play",
+						Emoji: discordgo.ComponentEmoji{
+							Name: "📚",
+						},
+					},
+				},
+			},
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label: "Форум",
+						URL:   "https://forum.rimasrp.life/",
+						Style: discordgo.LinkButton,
+						Emoji: discordgo.ComponentEmoji{
+							Name: "🔗",
+						},
+					},
+					discordgo.Button{
+						Label: "Личный кабинет",
+						URL:   "https://lk.rimasrp.life/",
+						Style: discordgo.LinkButton,
+						Emoji: discordgo.ComponentEmoji{
+							Name: "🔗",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	_, err = d.ds.ChannelMessageSendComplex(channel.ID, msg)
+	if err != nil {
+		d.logger.Errorf("printWelcome(): cant send message %s", err.Error())
+	}
+
+}
+
 var letters = []rune("ABEIKMHOPCTXZ")
 
 func randStringRune(n int) string {
