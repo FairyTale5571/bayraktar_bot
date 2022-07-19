@@ -82,7 +82,7 @@ func (d *Discord) getUserSteamId(userId string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer rows.Close() // nolint: errcheck
+	defer rows.Close() // nolint: not needed
 
 	var uid string
 	for rows.Next() {
@@ -103,7 +103,7 @@ func (d *Discord) getRandomVehicle() *Vehicles {
 		"WHERE active = 1 " +
 		"ORDER BY RAND() " +
 		"LIMIT 1")
-	defer rows.Close() // nolint: errcheck
+	defer rows.Close() // nolint: not needed
 
 	if err != nil {
 		d.logger.Errorf("getRandomVehicle(): cant get random vehicle %s", err.Error())
@@ -173,31 +173,30 @@ func (d *Discord) getPlayerInformation(steamId string) *PlayerData {
 	rows, err := d.db.Query(`SELECT p.uid, p.playerid,
 			p.name, p.nick_name, p.first_name, p.last_name,
 			p.cash, p.bankacc, p.EPoint,
-			g.name, p.group_level,
+			p.group_id, p.group_level,
 			p.insert_time, p.last_connected, p.total_time
 		FROM players p
-		INNER JOIN groups g ON g.id = p.group_id
 		WHERE p.playerid = ?`, steamId)
-	defer rows.Close() // nolint: errcheck
+	defer rows.Close() // nolint: not needed
 	if err != nil {
 		d.logger.Errorf("getPlayerInformation(): cant get player data %s", err.Error())
 		return nil
 	}
 	for rows.Next() {
-		if err := rows.Scan(&_player.Id, &_player.Uid, &_player.Name, &_player.NickName, &_player.FirstName, &_player.LastName, &_player.Cash, &_player.Bank, &_player.RC, &_player.GroupName, &_player.GroupLevel, &_player.InsertTime, &_player.LastConnected, &_player.TotalTime); err != nil {
+		if err := rows.Scan(&_player.Id, &_player.Uid, &_player.Name, &_player.NickName, &_player.FirstName, &_player.LastName, &_player.Cash, &_player.Bank, &_player.RC, &_player.GroupID, &_player.GroupLevel, &_player.InsertTime, &_player.LastConnected, &_player.TotalTime); err != nil {
 			d.logger.Errorf("getPlayerInformation(): cant get player data %s", err.Error())
 			return nil
 		}
 	}
-	if _player.GroupName.Valid {
-		rows, err = d.db.Query(`SELECT JSON_EXTRACT(titles, '$[?][1]') from groups where name = ?`, _player.GroupName.String)
-		defer rows.Close() // nolint: errcheck
+	if _player.GroupID != -1 {
+		rows, err = d.db.Query(`SELECT name, JSON_EXTRACT(titles, '$[?][1]') from groups where id = ?`, _player.GroupID)
+		defer rows.Close() // nolint: not needed
 		if err != nil {
 			d.logger.Errorf("getPlayerInformation(): cant get player data %s", err.Error())
 			return nil
 		}
 		for rows.Next() {
-			if err := rows.Scan(&_player.GroupLevelName); err != nil {
+			if err := rows.Scan(&_player.GroupName, &_player.GroupLevelName); err != nil {
 				d.logger.Errorf("getPlayerInformation(): cant get player data %s", err.Error())
 				return nil
 			}
