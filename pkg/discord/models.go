@@ -24,10 +24,10 @@ type PlayerData struct {
 	TotalTime      uint64
 	Id             int
 	GroupID        int
-	RC             uint32
-	Cash           uint32
-	Bank           uint32
-	GroupLevel     uint16
+	RC             int64
+	Cash           int64
+	Bank           int64
+	GroupLevel     int16
 }
 
 type gov struct {
