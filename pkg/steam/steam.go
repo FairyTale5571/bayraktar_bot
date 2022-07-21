@@ -2,7 +2,6 @@ package steam
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -34,18 +33,18 @@ func (s *Steam) workshopInfo(itemId string) *goquery.Document {
 	res, err := http.Get(EndpointSteamWorkshop + "/?id=" + itemId)
 	defer res.Body.Close() // nolint: not needed
 	if err != nil {
-		log.Fatalf("cant get workshop info: %v", err)
+		s.logger.Fatalf("cant get workshop info: %v", err)
 		return nil
 	}
 
 	if res.StatusCode != http.StatusOK {
-		log.Fatalf("cant get workshop info: %v", res.StatusCode)
+		s.logger.Fatalf("cant get workshop info: %v", res.StatusCode)
 		return nil
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		log.Fatalf("cant get workshop info: %v", err)
+		s.logger.Fatalf("cant get workshop info: %v", err)
 		return nil
 	}
 	return doc
@@ -77,6 +76,9 @@ func (s *Steam) workshopChangelogs(itemId string) *goquery.Document {
 
 func (s *Steam) GetLatestUpdate(itemId string) (update, id string) {
 	doc := s.workshopChangelogs(itemId)
+	if doc == nil {
+		return "", ""
+	}
 	doc.Find(".workshopAnnouncement").EachWithBreak(
 		func(i int, s *goquery.Selection) bool {
 			text := s.Find("p")
@@ -91,6 +93,10 @@ func (s *Steam) GetLatestUpdate(itemId string) (update, id string) {
 
 func (s *Steam) GetItemTitle(itemId string) {
 	doc := s.workshopInfo(itemId)
+	if doc == nil {
+		return
+	}
+
 	sel := doc.Find("div.workshopItemTitle").Each(
 		func(i int, s *goquery.Selection) {
 			text := s.Text()
@@ -102,6 +108,10 @@ func (s *Steam) GetItemTitle(itemId string) {
 
 func (s *Steam) GetItemLogo(itemId string) (logo string) {
 	doc := s.workshopInfo(itemId)
+	if doc == nil {
+		return ""
+	}
+
 	doc.Find("head link").Each(
 		func(i int, s *goquery.Selection) {
 			if val, exist := s.Attr("rel"); val == "image_src" && exist {
