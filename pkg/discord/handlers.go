@@ -20,8 +20,7 @@ func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCrea
 
 	// catch discord boosters
 	switch m.Message.Type {
-	case
-		discordgo.MessageTypeGuildMemberJoin:
+	case discordgo.MessageTypeGuildMemberJoin:
 	case
 		discordgo.MessageTypeUserPremiumGuildSubscriptionTierOne,
 		discordgo.MessageTypeUserPremiumGuildSubscriptionTierTwo,

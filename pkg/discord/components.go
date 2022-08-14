@@ -11,7 +11,6 @@ func (d *Discord) components() map[string]func(s *discordgo.Session, i *discordg
 }
 
 func (d *Discord) createTicket(s *discordgo.Session, i *discordgo.InteractionCreate) {
-
 }
 
 func (d *Discord) printLogin(id string) {

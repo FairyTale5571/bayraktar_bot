@@ -3,7 +3,6 @@ package discord
 import "github.com/bwmarrin/discordgo"
 
 func (d *Discord) printCreateTicket(channelID string) {
-
 	embed := &discordgo.MessageEmbed{
 		Title:       "Помощь",
 		Description: "Если вы столкнулись с проблемой, нажмите кнопку \"Открыть тикет\"",
@@ -28,5 +27,4 @@ func (d *Discord) printCreateTicket(channelID string) {
 	if err != nil {
 		d.logger.Errorf("cant send message: %v", err)
 	}
-
 }

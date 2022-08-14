@@ -48,7 +48,6 @@ func (s *Steam) workshopInfo(itemId string) *goquery.Document {
 		return nil
 	}
 	return doc
-
 }
 
 func (s *Steam) workshopChangelogs(itemId string) *goquery.Document {
@@ -71,7 +70,6 @@ func (s *Steam) workshopChangelogs(itemId string) *goquery.Document {
 		return nil
 	}
 	return doc
-
 }
 
 func (s *Steam) GetLatestUpdate(itemId string) (update, id string) {

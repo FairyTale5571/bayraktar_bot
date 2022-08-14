@@ -2,12 +2,12 @@ package discord
 
 import (
 	"fmt"
-	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"math/rand"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 )
 
 func (d *Discord) getAllMembers(guildId string) ([]*discordgo.Member, error) {

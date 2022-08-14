@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -107,5 +108,4 @@ func (d *Discord) printHow2Play(channelID string) {
 		d.logger.Errorf("printHow2Play(): %s", err.Error())
 		return
 	}
-
 }

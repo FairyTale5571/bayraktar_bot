@@ -20,12 +20,10 @@ type Config struct {
 	Debug bool   `env:"DEBUG,required"`
 }
 
-var (
-	DiscordOauth = oauth2.Config{
-		RedirectURL:  os.Getenv("URL") + "/auth/discord/callback",
-		ClientID:     os.Getenv("DISCORD_CLIENT"),
-		ClientSecret: os.Getenv("DISCORD_SECRET"),
-		Scopes:       []string{discordoauth.ScopeIdentify, discordoauth.ScopeGuilds},
-		Endpoint:     discordoauth.Endpoint,
-	}
-)
+var DiscordOauth = oauth2.Config{
+	RedirectURL:  os.Getenv("URL") + "/auth/discord/callback",
+	ClientID:     os.Getenv("DISCORD_CLIENT"),
+	ClientSecret: os.Getenv("DISCORD_SECRET"),
+	Scopes:       []string{discordoauth.ScopeIdentify, discordoauth.ScopeGuilds},
+	Endpoint:     discordoauth.Endpoint,
+}

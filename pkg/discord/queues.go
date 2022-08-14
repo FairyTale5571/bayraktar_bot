@@ -4,16 +4,16 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 )
 
 const guild = "719969719871995958"
 
 func (d *Discord) listenQueue() {
-
 	type player struct {
 		ds    string
 		steam string
@@ -60,17 +60,14 @@ func (d *Discord) listenQueue() {
 			d.logger.Errorf("Error setting player name (%s): %s", v.steam, err.Error())
 			return
 		}
-
 	}
 	_reRole := func(v *player) {
-
 	}
 
 	for _, v := range _getQueue() {
 		_rename(v)
 		_reRole(v)
 	}
-
 }
 
 func (d *Discord) getLkApi() (*gov, error) {

@@ -45,8 +45,25 @@ fix-imports:
 	${call colored,fixing imports...}
 	./scripts/fix-imports-order.sh
 
+## Fix fields.
+fields:
+	${call colored,fixing fields...}
+	./scripts/fieldalignment.sh
+
 ## lint project
 lint:
 	${call colored,lint is running...}
 	./scripts/linters.sh
 .PHONY: lint
+
+fumpt:
+	${call colored,fumpt is running...}
+	gofumpt -l -w .
+
+build:
+	${call colored,building...}
+	go build -o ${NAME} cmd/test/main.go
+
+run:
+	${call colored,running...}
+	./${NAME}
