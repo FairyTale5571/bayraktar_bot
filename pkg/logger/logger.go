@@ -7,8 +7,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var Log Logger
-
 type Logger interface {
 	Debug(args ...interface{})
 	Info(args ...interface{})

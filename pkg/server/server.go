@@ -39,7 +39,7 @@ func New(cfg *models.Config, bot *discord.Discord) *Router {
 
 func (r *Router) Start() {
 	r.logger.Info("gin opened")
-
+	r.router.Static("/assets/", "webApp/assets/")
 	r.mainRouter()
 	err := r.router.Run(":" + r.cfg.PORT)
 	if err != nil {
@@ -72,7 +72,5 @@ func (r *Router) steam(c *gin.Context) {
 	steamId = strings.TrimLeft(steamId, "https://steamcommunity.com/openid/id/")
 	r.logger.Infof("steam auth: %v | %v", state, steamId)
 	r.bot.RegisterUser(guild, state, steamId)
-	c.JSON(http.StatusOK, gin.H{
-		"message": "ok",
-	})
+	c.String(http.StatusOK, "Проверьте сообщение от бота в личных сообщениях")
 }

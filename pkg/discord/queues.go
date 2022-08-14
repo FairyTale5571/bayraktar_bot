@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"io"
 	"log"
 	"net/http"
@@ -72,19 +73,10 @@ func (d *Discord) listenQueue() {
 
 }
 
-func (d *Discord) updateStats() {
-	gov, _ := d.getLkApi()
-	_, err := d.ds.ChannelEdit("953006266303787019", fmt.Sprintf("║ 🌐 На сервере: %d", gov.Gov.Info.All))
-	if err != nil {
-		d.logger.Errorf("Error updating channel: %s", err.Error())
-		return
-	}
-}
-
 func (d *Discord) getLkApi() (*gov, error) {
 	var players gov
 	var client http.Client
-	resp, err := client.Get("https://lk.rimasrp.life/api/gov")
+	resp, err := client.Get(links.UrlLk + "/api/gov")
 	defer resp.Body.Close() // nolint: not needed
 
 	if err != nil {

@@ -2,7 +2,6 @@ package discord
 
 import (
 	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -16,7 +15,7 @@ func (d *Discord) commands() map[string]func(s *discordgo.Session, i *discordgo.
 }
 
 func (d *Discord) commandHelp(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	_, err := d.ds.ChannelMessageSend(i.ChannelID, "Бот для администрирования сервера Rimas, функционал доступен только администраторам")
+	_, err := d.ds.ChannelMessageSend(i.ChannelID, "Бот для администрирования сервера Rocket, функционал доступен только администраторам")
 	if err != nil {
 		d.logger.Errorf("commandHelp(): cant send message %s", err.Error())
 		return
@@ -95,4 +94,18 @@ func (d *Discord) commandGetHim(s *discordgo.Session, i *discordgo.InteractionCr
 		},
 		Color: 0x00ff00,
 	})
+}
+
+func (d *Discord) printHow2Play(channelID string) {
+	embed, component := d.getHow2Play()
+
+	_, err := d.ds.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
+		Embed:      embed,
+		Components: component,
+	})
+	if err != nil {
+		d.logger.Errorf("printHow2Play(): %s", err.Error())
+		return
+	}
+
 }

@@ -46,14 +46,14 @@ func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCrea
 			}
 		}
 		switch content {
-		case "!help_zxc":
+		case "!help_bayraktar":
 			d.printWelcome(m.Author.ID, m.GuildID)
-		case "!login_zxc":
+		case "!login_bayraktar":
 			if d.isAdmin(m.ChannelID, m.Author.ID) {
 				d.printLogin(m.ChannelID)
 			}
-		case "!update_zxc":
-			d.checkUpdate()
+		case "!how2play_bayraktar":
+			d.printHow2Play(m.ChannelID)
 		}
 	}
 	return
@@ -107,7 +107,6 @@ func (d *Discord) refreshAll() {
 		case <-ticker.C:
 			go d.checkUpdate()
 			go d.listenQueue()
-			go d.updateStats()
 		case <-quit:
 			ticker.Stop()
 			return

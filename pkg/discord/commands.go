@@ -6,7 +6,7 @@ var (
 	commands = []*discordgo.ApplicationCommand{
 		{
 			Name:        "help",
-			Description: "Бот для администрирования сервера Rimas, функционал доступен только администраторам",
+			Description: "Бот для администрирования сервера Rocket, функционал доступен только администраторам",
 		},
 		{
 			Name:        "help-player",

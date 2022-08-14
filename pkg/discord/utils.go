@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"math/rand"
 	"time"
 
@@ -306,7 +307,7 @@ func (d *Discord) printWelcome(userID, guildID string) {
 				Components: []discordgo.MessageComponent{
 					discordgo.Button{
 						Label: "Форум",
-						URL:   "https://forum.rimasrp.life/",
+						URL:   links.UrlForum,
 						Style: discordgo.LinkButton,
 						Emoji: discordgo.ComponentEmoji{
 							Name: "🔗",
@@ -314,7 +315,7 @@ func (d *Discord) printWelcome(userID, guildID string) {
 					},
 					discordgo.Button{
 						Label: "Личный кабинет",
-						URL:   "https://lk.rimasrp.life/",
+						URL:   links.UrlLk,
 						Style: discordgo.LinkButton,
 						Emoji: discordgo.ComponentEmoji{
 							Name: "🔗",
@@ -354,4 +355,71 @@ func generatePlateNumber() string {
 
 func secondsToDate(seconds uint64) string {
 	return fmt.Sprintf("%d дней %d часов %d минут", seconds/86400, (seconds%86400)/3600, (seconds%3600)/60)
+}
+
+func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageComponent) {
+	components := []discordgo.MessageComponent{
+		discordgo.ActionsRow{
+			Components: []discordgo.MessageComponent{
+				discordgo.Button{
+					Label: "ШАГ 1: Купить Arma 3",
+					Style: discordgo.LinkButton,
+					URL:   links.UrlGame,
+				},
+			},
+		},
+		discordgo.ActionsRow{
+			Components: []discordgo.MessageComponent{
+				discordgo.Button{
+					Label: "ШАГ 2: Подпишитесь на мод",
+					Style: discordgo.LinkButton,
+					URL:   links.UrlMod,
+				},
+			},
+		},
+		discordgo.ActionsRow{
+			Components: []discordgo.MessageComponent{
+				discordgo.Button{
+					Label: "ШАГ 3: Установите TeamSpeak 3",
+					Style: discordgo.LinkButton,
+					URL:   links.UrlTeamspeak,
+				},
+			},
+		},
+		discordgo.ActionsRow{
+			Components: []discordgo.MessageComponent{
+				discordgo.Button{
+					Label: "ШАГ 4: Установите плагин для TeamSpeak 3",
+					Style: discordgo.LinkButton,
+					URL:   links.UrlPlugin,
+				},
+			},
+		},
+		discordgo.ActionsRow{
+			Components: []discordgo.MessageComponent{
+				discordgo.Button{
+					Label: "Видео инструкция",
+					Style: discordgo.LinkButton,
+					URL:   "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+				},
+			},
+		},
+	}
+	embed := &discordgo.MessageEmbed{
+		Type:        discordgo.EmbedTypeImage,
+		Title:       "Как начать играть",
+		Description: "Следуйте инструкции ниже",
+		Fields: []*discordgo.MessageEmbedField{
+			{Name: "Шаг 1", Value: "Купите и скачайте ArmA 3 в Steam.\n" + links.UrlGame},
+			{Name: "Шаг 2", Value: "Подпишитесь на мод Rocket Life в мастерской Steam.\n" + links.UrlMod},
+			{Name: "Шаг 3", Value: "Скачайте клиент TeamSpeak и установите его.\n" + links.UrlTeamspeak},
+			{Name: "Шаг 4", Value: "Скачайте плагин Task Force Radio и установите его.\n" + links.UrlPlugin},
+			{Name: "Запуск", Value: "Запустите ArmA 3 в Steam, кликнув на кнопку играть.\n\nВ пункте \"Моды\" проверьте, включен ли мод **Rocket Life**, если отключен — включите его.\n\nНажмите на оранжевую кнопку играть в лаунчере ArmA 3.\n\nВ правом верхнем углы игры зайдите в свой профиль и укажите имя и фамилию вашего персонажа.\n\nЗайдите в браузер серверов и нажмите прямое подключение.\n\n" + links.UrlServer},
+		},
+		Color: 0x8700ff,
+		Image: &discordgo.MessageEmbedImage{
+			URL: d.cfg.URL + "/assets/images/big_logo.jpg",
+		},
+	}
+	return embed, components
 }
