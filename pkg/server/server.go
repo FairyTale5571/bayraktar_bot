@@ -54,6 +54,7 @@ func (r *Router) Stop() {
 
 func (r *Router) mainRouter() {
 	r.router.GET("/auth/steam", r.steam)
+	r.router.GET("/redirect/:to", r.redirect)
 }
 
 func (r *Router) steam(c *gin.Context) {

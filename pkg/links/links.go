@@ -4,6 +4,8 @@ const (
 	UrlServer   = "arma.rocket-rp.fun"
 	UrlTsServer = "ts.rocket-rp.fun"
 
+	UrlDiscord = "https://discord.com/invite/3eYKeKbpYE"
+
 	UrlLk        = "https://lk.rocket-rp.fun"
 	UrlSite      = "https://rocket-rp.fun"
 	UrlForum     = "https://forum.rocket-rp.fun"
