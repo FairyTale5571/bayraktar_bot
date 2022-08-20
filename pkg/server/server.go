@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"net/http"
 	"strings"
 
@@ -53,8 +54,12 @@ func (r *Router) Stop() {
 }
 
 func (r *Router) mainRouter() {
+	r.router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusPermanentRedirect, links.UrlSite)
+	})
 	r.router.GET("/auth/steam", r.steam)
 	r.router.GET("/redirect/:to", r.redirect)
+	r.router.GET("/plugin", r.plugin)
 }
 
 func (r *Router) steam(c *gin.Context) {
@@ -74,4 +79,8 @@ func (r *Router) steam(c *gin.Context) {
 	r.logger.Infof("steam auth: %v | %v", state, steamId)
 	r.bot.RegisterUser(guild, state, steamId)
 	c.String(http.StatusOK, "Проверьте сообщение от бота в личных сообщениях")
+}
+
+func (r *Router) plugin(c *gin.Context) {
+	c.Redirect(http.StatusTemporaryRedirect, r.cfg.URL+"/assets/files/task_force_radio.ts3_plugin")
 }

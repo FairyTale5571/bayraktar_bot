@@ -22,7 +22,6 @@ var linksMap = map[string]string{
 	"site":      links.UrlSite,
 	"lk":        links.UrlLk,
 	"mod":       links.UrlMod,
-	"plugin":    links.UrlPlugin,
 	"game":      links.UrlGame,
 	"teamspeak": links.UrlTeamspeak,
 }
