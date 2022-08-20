@@ -391,7 +391,7 @@ func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageCom
 				discordgo.Button{
 					Label: "ШАГ 4: Установите плагин для TeamSpeak 3",
 					Style: discordgo.LinkButton,
-					URL:   links.UrlPlugin,
+					URL:   d.cfg.URL + "/assets/files/task_force_radio.ts3_plugin",
 				},
 			},
 		},
@@ -413,7 +413,7 @@ func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageCom
 			{Name: "Шаг 1", Value: "Купите и скачайте ArmA 3 в Steam.\n" + links.UrlGame},
 			{Name: "Шаг 2", Value: "Подпишитесь на мод Rocket Life в мастерской Steam.\n" + links.UrlMod},
 			{Name: "Шаг 3", Value: "Скачайте клиент TeamSpeak и установите его.\n" + links.UrlTeamspeak},
-			{Name: "Шаг 4", Value: "Скачайте плагин Task Force Radio и установите его.\n" + links.UrlPlugin},
+			{Name: "Шаг 4", Value: "Скачайте плагин Task Force Radio и установите его.\n" + d.cfg.URL + "/assets/files/task_force_radio.ts3_plugin"},
 			{Name: "Запуск", Value: "Запустите ArmA 3 в Steam, кликнув на кнопку играть.\n\nВ пункте \"Моды\" проверьте, включен ли мод **Rocket Life**, если отключен — включите его.\n\nНажмите на оранжевую кнопку играть в лаунчере ArmA 3.\n\nВ правом верхнем углы игры зайдите в свой профиль и укажите имя и фамилию вашего персонажа.\n\nЗайдите в браузер серверов и нажмите прямое подключение.\n\n" + links.UrlServer},
 		},
 		Color: 0x8700ff,
