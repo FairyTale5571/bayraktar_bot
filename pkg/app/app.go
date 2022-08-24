@@ -7,6 +7,7 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"github.com/fairytale5571/bayraktar_bot/pkg/server"
+	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 )
 
 type App struct {
@@ -32,13 +33,20 @@ func New() (*App, error) {
 		return nil, err
 	}
 
-	ds, err := discord.New(cfg, db)
+	rdb, err := redis.New(cfg.RedisUri)
+	if err != nil {
+		log.Fatalf("cant create redis client: %v", err)
+		return nil, err
+	}
+	log.Info("redis started")
+
+	ds, err := discord.New(cfg, db, rdb)
 	if err != nil {
 		log.Fatalf("error start discord: %v", err)
 		return nil, err
 	}
 
-	srv := server.New(cfg, ds)
+	srv := server.New(cfg, ds, db, rdb)
 	if err != nil {
 		log.Errorf("error start server: %v", err)
 		return nil, err

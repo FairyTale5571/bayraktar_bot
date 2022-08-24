@@ -18,20 +18,14 @@ type Discord struct {
 	steam  *steam.Steam
 }
 
-func New(cfg *models.Config, db *database.DB) (*Discord, error) {
+func New(cfg *models.Config, db *database.DB, rdb *redis.Redis) (*Discord, error) {
 	res := &Discord{
+		rdb:    rdb,
 		cfg:    cfg,
 		db:     db,
 		steam:  steam.New(cfg),
 		logger: logger.New("discord"),
 	}
-	rdb, err := redis.New(cfg.RedisUri)
-	if err != nil {
-		res.logger.Fatalf("cant create redis client: %v", err)
-		return nil, err
-	}
-	res.logger.Info("redis started")
-	res.rdb = rdb
 
 	s, err := discordgo.New("Bot " + res.cfg.DiscordToken)
 	if err != nil {

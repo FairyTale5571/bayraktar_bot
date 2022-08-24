@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/storage"
@@ -42,4 +43,8 @@ func (r *Redis) Delete(id string, payments storage.Bucket) {
 	if err := r.db.Del(ctx, fmt.Sprintf("%s::%s", payments, id)).Err(); err != nil {
 		r.logger.Errorf("delete redis key %s", err.Error())
 	}
+}
+
+func (r *Redis) SetTTL(key, value string, bucket storage.Bucket, ttl time.Duration) error {
+	return r.db.Set(ctx, fmt.Sprintf("%s::%s", bucket, key), value, ttl).Err()
 }

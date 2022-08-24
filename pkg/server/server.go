@@ -1,7 +1,9 @@
 package server
 
 import (
+	"github.com/fairytale5571/bayraktar_bot/pkg/database"
 	"github.com/fairytale5571/bayraktar_bot/pkg/links"
+	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 	"net/http"
 	"strings"
 
@@ -17,6 +19,8 @@ type Router struct {
 	cfg      *models.Config
 	bot      *discord.Discord
 	logger   *logger.LoggerWrapper
+	db       *database.DB
+	rdb      *redis.Redis
 	settings AuthConfig
 }
 
@@ -24,10 +28,12 @@ type AuthConfig struct {
 	DiscordConfig oauth2.Config
 }
 
-func New(cfg *models.Config, bot *discord.Discord) *Router {
+func New(cfg *models.Config, bot *discord.Discord, db *database.DB, rdb *redis.Redis) *Router {
 	r := Router{
 		bot:    bot,
 		cfg:    cfg,
+		db:     db,
+		rdb:    rdb,
 		router: gin.Default(),
 		logger: logger.New("server"),
 	}
@@ -60,6 +66,12 @@ func (r *Router) mainRouter() {
 	r.router.GET("/auth/steam", r.steam)
 	r.router.GET("/redirect/:to", r.redirect)
 	r.router.GET("/plugin", r.plugin)
+
+	apiGroup := r.router.Group("/api")
+	{
+		apiGroup.GET("/economy", r.economy)
+
+	}
 }
 
 func (r *Router) steam(c *gin.Context) {
