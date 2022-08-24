@@ -423,3 +423,15 @@ func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageCom
 	}
 	return embed, components
 }
+
+const (
+	channelLog = "1011990018623025185"
+)
+
+func (d *Discord) printLog(logstr string) {
+	_, err := d.ds.ChannelMessageSend(channelLog, logstr)
+	if err != nil {
+		d.logger.Errorf("printLog(): %s", err)
+		return
+	}
+}
