@@ -64,13 +64,13 @@ func (d *Discord) onUserChanged(s *discordgo.Session, i *discordgo.GuildMemberUp
 }
 
 func (d *Discord) onUserConnected(s *discordgo.Session, i *discordgo.GuildMemberAdd) {
-	d.printLog(fmt.Sprintf("✅ %s подключился к серверу!", i.User.Username))
+	d.printLog(fmt.Sprintf("✅ %s подключился к серверу! (%s#%s)", i.User.Mention(), i.User.Username, i.User.Discriminator))
 	d.printWelcome(i.User.ID, i.GuildID)
 	return
 }
 
 func (d *Discord) onUserDisconnected(s *discordgo.Session, i *discordgo.GuildMemberRemove) {
-	d.printLog(fmt.Sprintf("❌ %s отключился от сервера!", i.User.Username))
+	d.printLog(fmt.Sprintf("❌ %s отключился от сервера! (%s#%s)", i.User.Mention(), i.User.Username, i.User.Discriminator))
 	d.deleteUser(i.User.ID)
 	return
 }
