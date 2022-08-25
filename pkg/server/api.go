@@ -1,9 +1,12 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
+	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/fairytale5571/bayraktar_bot/pkg/models"
+	"github.com/gin-gonic/gin"
 )
 
 func (r *Router) economy(c *gin.Context) {
@@ -14,18 +17,18 @@ func (r *Router) economy(c *gin.Context) {
 		return
 	}
 	type Economy struct {
+		LastUpdate       time.Time
 		Resource         string
 		Localize         string
+		Influenced       string
 		Price            int
 		MaxPrice         int
+		RandomMax        int
+		RandomMin        int
 		MinPrice         int
 		DownPricePerItem float64
 		RandomDownPrice  bool
-		RandomMax        int
-		RandomMin        int
 		Illegal          bool
-		Influenced       string
-		LastUpdate       time.Time
 	}
 	var economies []Economy
 	for rows.Next() {
@@ -38,4 +41,59 @@ func (r *Router) economy(c *gin.Context) {
 		economies = append(economies, e)
 	}
 	c.JSON(http.StatusOK, economies)
+}
+
+const (
+	headerPass  = "X-Pass"
+	discordUser = "X-Discord-User"
+)
+
+func (r *Router) mailingUsers(c *gin.Context) {
+	if c.GetHeader(headerPass) != r.cfg.PostPassword {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
+		return
+	}
+	body_, err := c.GetRawData()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var embeds models.Embeds
+	err = json.Unmarshal(body_, &embeds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+	})
+	r.bot.SendMassive(embeds)
+}
+
+func (r *Router) sendDirect(c *gin.Context) {
+	if c.GetHeader(headerPass) != r.cfg.PostPassword {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
+		return
+	}
+	user := c.GetHeader(discordUser)
+	if user == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "discord user not found"})
+		return
+	}
+
+	body_, err := c.GetRawData()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var embeds models.Embeds
+	err = json.Unmarshal(body_, &embeds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+	})
+	r.bot.SendDirect(user, embeds)
 }

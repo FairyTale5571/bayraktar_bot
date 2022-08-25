@@ -435,3 +435,16 @@ func (d *Discord) printLog(logstr string) {
 		return
 	}
 }
+
+func (d *Discord) sendPrivateMessage(userID string, message *discordgo.MessageSend) {
+	ch, err := d.ds.UserChannelCreate(userID)
+	if err != nil {
+		d.logger.Errorf("sendPrivateMessage(): Error user channel create: %s", err.Error())
+		return
+	}
+	_, err = d.ds.ChannelMessageSendComplex(ch.ID, message)
+	if err != nil {
+		d.logger.Errorf("sendPrivateMessage(): Error sending message: %s", err.Error())
+		return
+	}
+}

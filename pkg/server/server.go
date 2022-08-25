@@ -1,15 +1,15 @@
 package server
 
 import (
-	"github.com/fairytale5571/bayraktar_bot/pkg/database"
-	"github.com/fairytale5571/bayraktar_bot/pkg/links"
-	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 	"net/http"
 	"strings"
 
+	"github.com/fairytale5571/bayraktar_bot/pkg/database"
 	"github.com/fairytale5571/bayraktar_bot/pkg/discord"
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"github.com/fairytale5571/bayraktar_bot/pkg/logger"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
+	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 )
@@ -70,7 +70,8 @@ func (r *Router) mainRouter() {
 	apiGroup := r.router.Group("/api")
 	{
 		apiGroup.GET("/economy", r.economy)
-
+		apiGroup.POST("/mailing", r.mailingUsers)
+		apiGroup.POST("/direct", r.sendDirect)
 	}
 }
 

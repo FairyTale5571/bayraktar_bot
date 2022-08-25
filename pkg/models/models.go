@@ -12,6 +12,8 @@ type Config struct {
 	DiscordToken  string `env:"DISCORD_TOKEN,required"`
 	TelegramToken string `env:"TELEGRAM_TOKEN"`
 
+	PostPassword string `env:"POST_PASSWORD,required"`
+
 	MysqlUri string `env:"MYSQL_URI,required"`
 	RedisUri string `env:"REDISCLOUD_URL,required"`
 
