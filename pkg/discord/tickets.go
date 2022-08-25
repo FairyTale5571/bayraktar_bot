@@ -19,7 +19,7 @@ func (d *Discord) printCreateTicket(channelID string) {
 	}
 	msg := &discordgo.MessageSend{
 		Embed: embed,
-		TTS:   true,
+		TTS:   false,
 		Components: []discordgo.MessageComponent{
 			discordgo.ActionsRow{
 				Components: []discordgo.MessageComponent{
