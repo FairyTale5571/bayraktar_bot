@@ -53,14 +53,14 @@ func (d *Discord) makeButtonLink() []discordgo.MessageComponent {
 	}
 }
 
-func (d *Discord) SendMassive(embeds models.Embeds) {
+func (d *Discord) SendMassive(guildID string, embeds models.Embeds) {
 	for _, v := range embeds.Embeds {
 		embed := d.serializeEmbed(v)
 		data := &discordgo.MessageSend{
 			Embed:      embed,
 			Components: d.makeButtonLink(),
 		}
-		members, err := d.getAllMembers(guild)
+		members, err := d.getAllMembers(guildID)
 		if err != nil {
 			continue
 		}

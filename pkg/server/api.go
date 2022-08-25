@@ -49,6 +49,11 @@ const (
 )
 
 func (r *Router) mailingUsers(c *gin.Context) {
+	guild := c.Param("guild")
+	if guild == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild not found"})
+		return
+	}
 	if c.GetHeader(headerPass) != r.cfg.PostPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
 		return
@@ -67,7 +72,7 @@ func (r *Router) mailingUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
 	})
-	r.bot.SendMassive(embeds)
+	r.bot.SendMassive(guild, embeds)
 }
 
 func (r *Router) sendDirect(c *gin.Context) {

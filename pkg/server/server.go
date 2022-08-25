@@ -70,7 +70,7 @@ func (r *Router) mainRouter() {
 	apiGroup := r.router.Group("/api")
 	{
 		apiGroup.GET("/economy", r.economy)
-		apiGroup.POST("/mailing", r.mailingUsers)
+		apiGroup.POST("/mailing/:guild", r.mailingUsers)
 		apiGroup.POST("/direct", r.sendDirect)
 	}
 }
