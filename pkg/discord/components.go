@@ -1,16 +1,45 @@
 package discord
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"fmt"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 func (d *Discord) components() map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	return map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 		"login":         d.componentLogin,
 		"how_to_play":   d.howToPlay,
 		"create_ticket": d.createTicket,
+		"close_ticket":  d.closeTicket,
 	}
 }
 
 func (d *Discord) createTicket(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Flags:   1 << 6,
+			Content: "думаю...",
+		},
+	})
+	if err != nil {
+		d.logger.Errorf("createTicket(): Error interaction respond: %s", err.Error())
+		return
+	}
+	ch, err := d.createTickets(i.GuildID, i.Interaction.Member.User)
+	if err != nil {
+		d.logger.Errorf("createTicket(): Error create tickets: %s", err.Error())
+		return
+	}
+	resText := fmt.Sprintf("Тикет был создан в канале <#%s>", ch.ID)
+	_, err = d.ds.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
+		Content: &resText,
+	})
+	if err != nil {
+		d.logger.Errorf("createTicket(): Error interaction response edit: %s", err.Error())
+		return
+	}
 }
 
 func (d *Discord) printLogin(id string) {
