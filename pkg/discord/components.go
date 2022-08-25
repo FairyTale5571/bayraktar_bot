@@ -47,6 +47,13 @@ func (d *Discord) printLogin(id string) {
 }
 
 func (d *Discord) componentLogin(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Flags:   1 << 6,
+			Content: "Дальнейшие инструкции отправлена вам в личные сообщения!",
+		},
+	})
 	embed := &discordgo.MessageEmbed{
 		Title:       "Авторизация",
 		Description: "Для авторизации нажми на кнопку \"Верифицировать\"",
