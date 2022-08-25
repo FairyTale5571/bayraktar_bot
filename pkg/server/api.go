@@ -44,8 +44,7 @@ func (r *Router) economy(c *gin.Context) {
 }
 
 const (
-	headerPass  = "X-Pass"
-	discordUser = "X-Discord-User"
+	headerPass = "X-Pass"
 )
 
 func (r *Router) mailingUsers(c *gin.Context) {
@@ -80,7 +79,7 @@ func (r *Router) sendDirect(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
 		return
 	}
-	user := c.GetHeader(discordUser)
+	user := c.Param("userid")
 	if user == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "discord user not found"})
 		return

@@ -7,15 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-/*
-	redirect.GET("/discord", r.discordRedirect)
-	redirect.GET("/forum", r.forumRedirect)
-	redirect.GET("/site", r.siteRedirect)
-	redirect.GET("/lk", r.lkRedirect)
-	redirect.GET("/mod", r.modRedirect)
-	redirect.GET("/plugin", r.pluginRedirect)
-*/
-
 var linksMap = map[string]string{
 	"discord":   links.UrlDiscord,
 	"forum":     links.UrlForum,
