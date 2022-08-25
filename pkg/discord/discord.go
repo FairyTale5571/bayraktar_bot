@@ -47,6 +47,8 @@ func (d *Discord) Start() {
 	}
 	go d.refreshAll()
 	d.logger.Info("discord started")
+	_ = d.ds.UpdateGameStatus(0, "Rocket Life")
+
 }
 
 func (d *Discord) setupHandlers() {
