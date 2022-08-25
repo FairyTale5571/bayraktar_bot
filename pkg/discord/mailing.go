@@ -39,6 +39,14 @@ func (d *Discord) serializeEmbed(embeds models.Embed) *discordgo.MessageEmbed {
 	}
 }
 
+func (d *Discord) serializeEmbeds(embeds models.Embeds) []*discordgo.MessageEmbed {
+	var res []*discordgo.MessageEmbed
+	for _, v := range embeds.Embeds {
+		res = append(res, d.serializeEmbed(v))
+	}
+	return res
+}
+
 func (d *Discord) makeButtonLink() []discordgo.MessageComponent {
 	return []discordgo.MessageComponent{
 		discordgo.ActionsRow{
@@ -54,19 +62,20 @@ func (d *Discord) makeButtonLink() []discordgo.MessageComponent {
 }
 
 func (d *Discord) SendMassive(guildID string, embeds models.Embeds) {
-	for _, v := range embeds.Embeds {
-		embed := d.serializeEmbed(v)
-		data := &discordgo.MessageSend{
-			Embed:      embed,
-			Components: d.makeButtonLink(),
-		}
-		members, err := d.getAllMembers(guildID)
-		if err != nil {
+	data := &discordgo.MessageSend{
+		Embeds:     d.serializeEmbeds(embeds),
+		Components: d.makeButtonLink(),
+	}
+	members, err := d.getAllMembers(guildID)
+	if err != nil {
+		d.logger.Errorf("Error while getting members: %s", err)
+		return
+	}
+	for _, member := range members {
+		if member.User.Bot {
 			continue
 		}
-		for _, member := range members {
-			d.sendPrivateMessage(member.User.ID, data)
-		}
+		d.sendPrivateMessage(member.User.ID, data)
 	}
 }
 

@@ -72,7 +72,7 @@ func (r *Router) mailingUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
 	})
-	r.bot.SendMassive(guild, embeds)
+	go r.bot.SendMassive(guild, embeds)
 }
 
 func (r *Router) sendDirect(c *gin.Context) {
@@ -100,5 +100,5 @@ func (r *Router) sendDirect(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
 	})
-	r.bot.SendDirect(user, embeds)
+	go r.bot.SendDirect(user, embeds)
 }

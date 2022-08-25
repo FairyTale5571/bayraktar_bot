@@ -447,4 +447,5 @@ func (d *Discord) sendPrivateMessage(userID string, message *discordgo.MessageSe
 		d.logger.Errorf("sendPrivateMessage(): Error sending message: %s", err.Error())
 		return
 	}
+	d.logger.Infof("sendPrivateMessage(): Message sent to %s", userID)
 }
