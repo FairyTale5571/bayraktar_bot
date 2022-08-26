@@ -79,37 +79,29 @@ func (d *Discord) componentLogin(s *discordgo.Session, i *discordgo.InteractionC
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Flags:   1 << 6,
+			Flags: 1 << 6,
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Авторизация",
+					Description: "Для авторизации нажми на кнопку \"Верифицировать\"",
+					Color:       0x8700ff,
+				},
+			},
 			Content: "Дальнейшие инструкции отправлена вам в личные сообщения!",
-		},
-	})
-	embed := &discordgo.MessageEmbed{
-		Title:       "Авторизация",
-		Description: "Для авторизации нажми на кнопку \"Верифицировать\"",
-		Color:       0x8700ff,
-	}
-	data := &discordgo.MessageSend{
-		Embed: embed,
-		Components: []discordgo.MessageComponent{
-			discordgo.ActionsRow{
-				Components: []discordgo.MessageComponent{
-					discordgo.Button{
-						Label:    "Верифицировать",
-						Style:    discordgo.LinkButton,
-						Disabled: false,
-						URL:      d.steam.GetAuthLink(i.GuildID, i.Interaction.Member.User.ID),
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.Button{
+							Label:    "Верифицировать",
+							Style:    discordgo.LinkButton,
+							Disabled: false,
+							URL:      d.steam.GetAuthLink(i.GuildID, i.Interaction.Member.User.ID),
+						},
 					},
 				},
 			},
 		},
-	}
-
-	ch, err := d.ds.UserChannelCreate(i.Interaction.Member.User.ID)
-	if err != nil {
-		d.logger.Errorf("componentLogin(): Error user channel create: %s", err.Error())
-		return
-	}
-	_, err = d.ds.ChannelMessageSendComplex(ch.ID, data)
+	})
 	if err != nil {
 		d.logger.Errorf("componentLogin(): Error sending message: %s", err.Error())
 		return
