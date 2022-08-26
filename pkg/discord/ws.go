@@ -2,6 +2,7 @@ package discord
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 	"github.com/fairytale5571/bayraktar_bot/pkg/storage"
 )
 
@@ -25,22 +26,24 @@ func (d *Discord) checkUpdate() {
 	d.printUpdate(text)
 }
 
+const channelUpdates = "864647029049655337"
+
 func (d *Discord) printUpdate(update string) {
 	data := &discordgo.MessageEmbed{
 		Type:        discordgo.EmbedTypeImage,
 		Title:       "⚠️ Мод обновлен!",
-		URL:         "https://steamcommunity.com/sharedfiles/filedetails/?id=1368860933",
+		URL:         links.UrlMod,
 		Description: "Обновите мод что-бы избежать проблем со входом на сервер!",
 		Color:       0xFBFF00,
 		Fields: []*discordgo.MessageEmbedField{
 			{Name: "Внесенные изменения:", Value: update},
 		},
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: "https://i.imgur.com/fkuPE2b.gif",
+			URL: d.cfg.URL + "/assets/images/logo.png",
 		},
 		Timestamp: "",
 	}
-	_, err := d.ds.ChannelMessageSendEmbed("864647029049655337", data)
+	_, err := d.ds.ChannelMessageSendEmbed(channelUpdates, data)
 	if err != nil {
 		d.logger.Errorf("printUpdate(): Error sending message: %s", err.Error())
 		return
