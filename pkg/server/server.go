@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/fairytale5571/bayraktar_bot/pkg/database"
 	"github.com/fairytale5571/bayraktar_bot/pkg/discord"
@@ -63,7 +62,11 @@ func (r *Router) mainRouter() {
 	r.router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusPermanentRedirect, links.UrlSite)
 	})
-	r.router.GET("/auth/steam", r.steam)
+	authGroup := r.router.Group("/auth")
+	{
+		authGroup.GET("/steam", r.steam)
+		authGroup.GET("/discord", r.discord)
+	}
 	r.router.GET("/redirect/:to", r.redirect)
 	r.router.GET("/plugin", r.plugin)
 
@@ -72,26 +75,8 @@ func (r *Router) mainRouter() {
 		apiGroup.GET("/economy", r.economy)
 		apiGroup.POST("/mailing/:guild", r.mailingUsers)
 		apiGroup.POST("/direct/:userid", r.sendDirect)
+		apiGroup.POST("/channel/:guild/:channel", r.sendToChannel)
 	}
-}
-
-func (r *Router) steam(c *gin.Context) {
-	r.logger.Info("steam auth")
-
-	state := c.Request.URL.Query().Get("state")
-	guild := c.Request.URL.Query().Get("guild")
-	steamId := c.Request.URL.Query().Get("openid.claimed_id")
-	if steamId == "" {
-		r.logger.Error("steam auth failed")
-		c.JSON(http.StatusForbidden, gin.H{
-			"message": "steam auth failed",
-		})
-		return
-	}
-	steamId = strings.TrimLeft(steamId, "https://steamcommunity.com/openid/id/")
-	r.logger.Infof("steam auth: %v | %v", state, steamId)
-	r.bot.RegisterUser(guild, state, steamId)
-	c.String(http.StatusOK, "Проверьте сообщение от бота в личных сообщениях")
 }
 
 func (r *Router) plugin(c *gin.Context) {

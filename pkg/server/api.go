@@ -9,6 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	headerPass = "X-Pass"
+)
+
 func (r *Router) economy(c *gin.Context) {
 	rows, err := r.db.Query("SELECT * FROM economy")
 	defer rows.Close()
@@ -43,10 +47,6 @@ func (r *Router) economy(c *gin.Context) {
 	c.JSON(http.StatusOK, economies)
 }
 
-const (
-	headerPass = "X-Pass"
-)
-
 func (r *Router) mailingUsers(c *gin.Context) {
 	guild := c.Param("guild")
 	if guild == "" {
@@ -72,6 +72,39 @@ func (r *Router) mailingUsers(c *gin.Context) {
 		"message": "ok",
 	})
 	go r.bot.SendMassive(guild, embeds)
+}
+
+func (r *Router) sendToChannel(c *gin.Context) {
+	if c.GetHeader(headerPass) != r.cfg.PostPassword {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
+		return
+	}
+	guild := c.Param("guild")
+	if guild == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild not found"})
+		return
+	}
+	channel := c.Param("channel")
+	if channel == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild not found"})
+		return
+	}
+
+	body_, err := c.GetRawData()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var embeds models.Embeds
+	err = json.Unmarshal(body_, &embeds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+	})
+	go r.bot.SendToChannel(guild, channel, embeds)
 }
 
 func (r *Router) sendDirect(c *gin.Context) {
