@@ -55,7 +55,9 @@ func (d *Discord) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCrea
 		case "!how2play_bayraktar":
 			d.printHow2Play(m.ChannelID)
 		case "!tickets":
-			d.printCreateTicket(m.ChannelID)
+			if d.isAdmin(m.ChannelID, m.Author.ID) {
+				d.printCreateTicket(m.ChannelID)
+			}
 		}
 	}
 	return

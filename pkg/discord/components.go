@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -29,6 +30,13 @@ func (d *Discord) createTicket(s *discordgo.Session, i *discordgo.InteractionCre
 	}
 	ch, err := d.createTickets(i.GuildID, i.Interaction.Member.User)
 	if err != nil {
+		if err == errorUtils.ErrTicketOpened {
+			resText := fmt.Sprintf("У вас уже активен тикет, закройте предыдущий перед открытием нового")
+			_, err = d.ds.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
+				Content: &resText,
+			})
+			return
+		}
 		d.logger.Errorf("createTicket(): Error create tickets: %s", err.Error())
 		return
 	}

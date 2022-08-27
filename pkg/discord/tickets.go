@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -74,7 +75,22 @@ func (d *Discord) getTicketOwner(channelID string) (string, error) {
 	return creatorId, nil
 }
 
+func (d *Discord) isTicketOpened(userID string) bool {
+	rows, err := d.db.Query("SELECT id FROM discord_tickets WHERE creator_id = ?", userID)
+	defer rows.Close()
+	if err != nil {
+		return false
+	}
+	if rows.Next() {
+		return true
+	}
+	return false
+}
+
 func (d *Discord) createTickets(guildID string, user *discordgo.User) (*discordgo.Channel, error) {
+	if d.isTicketOpened(user.ID) {
+		return nil, errorUtils.ErrTicketOpened
+	}
 	ticketId, err := d.saveTicket(user.ID)
 	if err != nil {
 		return nil, err
