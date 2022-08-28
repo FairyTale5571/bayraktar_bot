@@ -149,26 +149,14 @@ func (d *Discord) closeTicket(s *discordgo.Session, i *discordgo.InteractionCrea
 	_ = d.ds.ChannelMessageDelete(i.Interaction.ChannelID, i.Interaction.Message.ID)
 
 	channelID := i.Interaction.ChannelID
-	_, err = d.ds.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
-		ParentID: parentArchive,
-	})
-	if err != nil {
-		d.logger.Errorf("cant close ticket: %v", err)
-		return
-	}
-	ticketOwner, err := d.getTicketOwner(channelID)
-	if err != nil {
-		d.logger.Errorf("cant get ticket owner: %v", err)
-		return
-	}
-	err = d.ds.ChannelPermissionSet(channelID, ticketOwner, discordgo.PermissionOverwriteTypeMember, 0, 1)
-	if err != nil {
-		d.logger.Errorf("cant set permission: %v", err)
-		return
-	}
 	_, err = d.db.Exec("DELETE FROM discord_tickets WHERE channel_id = ?", channelID)
 	if err != nil {
 		d.logger.Errorf("cant delete ticket from database: %v", err)
+		return
+	}
+	_, err = d.ds.ChannelDelete(channelID)
+	if err != nil {
+		d.logger.Errorf("cant delete channel: %v", err)
 		return
 	}
 }
