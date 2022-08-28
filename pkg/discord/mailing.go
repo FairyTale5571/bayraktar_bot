@@ -94,8 +94,8 @@ func (d *Discord) SendToChannel(guildID, channelID string, embeds models.Embeds)
 	for _, v := range embeds.Embeds {
 		embed := d.serializeEmbed(v)
 		data := &discordgo.MessageSend{
-			Embed:      embed,
-			Components: d.makeButtonLink(),
+			Content: embeds.Content,
+			Embed:   embed,
 		}
 		_, err := d.ds.ChannelMessageSendComplex(channelID, data)
 		if err != nil {

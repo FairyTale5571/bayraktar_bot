@@ -28,5 +28,6 @@ type Embed struct {
 }
 
 type Embeds struct {
-	Embeds []Embed `json:"embeds"`
+	Embeds  []Embed `json:"embeds"`
+	Content string  `json:"content"`
 }
