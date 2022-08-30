@@ -158,6 +158,7 @@ func (d *Discord) listenQueue() {
 	}
 
 	for _, v := range _getQueue() {
+		d.logger.Infof("Processing queue: %s (%s)", v.steam, v.ds)
 		_rename(v)
 		_reRole(v)
 	}
