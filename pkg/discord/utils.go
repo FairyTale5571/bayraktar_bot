@@ -225,11 +225,13 @@ func (d *Discord) RegisterUser(guildId, userId, steamId string) {
 	_ = d.db.QueryRow("SELECT id FROM discord_users WHERE uid = ? limit 1", steamId).Scan(&_userId)
 	if _userId != "" {
 		d.printPrivateMessage(userId, "Этот Steam аккаунт уже зарегистрирован")
+		d.logger.Infof("RegisterUser(): user %s already registered", steamId)
 		return
 	}
 	_ = d.db.QueryRow("SELECT uid FROM players WHERE playerid = ? limit 1", steamId).Scan(&_userId)
 	if _userId == "" {
 		d.printPrivateMessage(userId, "Мы не нашли ваш Steam аккаунт в базе данных\nВероятно это из-за того, что вы еще не играли на сервере")
+		d.logger.Infof("RegisterUser(): user %s not found in database", steamId)
 		return
 	}
 	user, err := d.ds.GuildMember(guildId, userId)
@@ -248,6 +250,7 @@ func (d *Discord) RegisterUser(guildId, userId, steamId string) {
 		return
 	}
 	d.printPrivateMessage(userId, "Вы успешно зарегистрированы в сервере!\nДоступ к каналам предоставлен!")
+	d.logger.Infof("RegisterUser(): user %s registered", steamId)
 }
 
 func (d *Discord) deleteUser(userId string) {
