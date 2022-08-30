@@ -242,7 +242,7 @@ func (d *Discord) RegisterUser(guildId, userId, steamId string) {
 		d.logger.Errorf("RegisterUser(): cant insert user %s", err.Error())
 		return
 	}
-	err = d.ds.GuildMemberRoleAdd(guildId, userId, "864630308242849825")
+	err = d.ds.GuildMemberRoleAdd(guildId, userId, d.cfg.RegRoleID)
 	if err != nil {
 		d.logger.Errorf("RegisterUser(): cant add role %s", err.Error())
 		return
@@ -448,4 +448,31 @@ func (d *Discord) sendPrivateMessage(userID string, message *discordgo.MessageSe
 		return
 	}
 	d.logger.Infof("sendPrivateMessage(): Message sent to %s", userID)
+}
+
+func (d *Discord) deleteUserFromVerified(userID string) {
+	_, err := d.db.Exec(`DELETE FROM discord_users WHERE discord_uid = ?`, userID)
+	if err != nil {
+		d.logger.Errorf("deleteUserFromVerified(): %s", err)
+		return
+	}
+}
+
+func (d *Discord) getGroupRoles() []string {
+	rows, err := d.db.Query("SELECT ds_role_leader, ds_role_member_id FROM groups")
+	defer rows.Close()
+	var res []string
+	if err != nil {
+		d.logger.Errorf("getGroupRoles(): Error: %v", err.Error())
+		return res
+	}
+	var dsRoleLeader, dsRoleMember string
+	for rows.Next() {
+		if err := rows.Scan(&dsRoleLeader, &dsRoleMember); err != nil {
+			d.logger.Errorf("getGroupRoles(): Error: %v", err.Error())
+			continue
+		}
+		res = append(res, dsRoleLeader, dsRoleMember)
+	}
+	return res
 }

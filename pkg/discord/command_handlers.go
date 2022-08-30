@@ -8,10 +8,12 @@ import (
 
 func (d *Discord) commands() map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	return map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-		"help":       d.commandHelp,
-		"copy-role":  d.commandCopyRole,
-		"give-boost": d.commandGiveBoost,
-		"get-him":    d.commandGetHim,
+		"help":              d.commandHelp,
+		"copy-role":         d.commandCopyRole,
+		"give-boost":        d.commandGiveBoost,
+		"get-him":           d.commandGetHim,
+		"delete-unverified": d.commandDeleteUnverified,
+		"remove-unverified": d.commandRemoveUnverified,
 	}
 }
 
@@ -108,4 +110,60 @@ func (d *Discord) printHow2Play(channelID string) {
 		d.logger.Errorf("printHow2Play(): %s", err.Error())
 		return
 	}
+}
+
+func (d *Discord) commandDeleteUnverified(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	d.printHiddenMessageInteraction(i, "Выполняю...")
+	var uids []string
+	rows, err := d.db.Query("select discord_uid from discord_users ORDER BY id ASC")
+	defer rows.Close()
+
+	if err != nil {
+		d.logger.Errorf("commandDeleteUnverified(): Error: %v", err.Error())
+		return
+	}
+	var uid string
+	for rows.Next() {
+		if err := rows.Scan(&uid); err != nil {
+			d.logger.Errorf("commandDeleteUnverified(): Error: %v", err.Error())
+			continue
+		}
+		uids = append(uids, uid)
+	}
+
+	for _, elem := range uids {
+		go func(elem string) {
+			_, err := s.GuildMember(d.cfg.GuildID, elem)
+			if err != nil {
+				d.logger.Infof("User: %v will be deleted", elem)
+				d.deleteUserFromVerified(elem)
+			}
+		}(elem)
+	}
+	d.logger.Info("commandDeleteUnverified(): Done")
+}
+
+func (d *Discord) commandRemoveUnverified(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	d.printHiddenMessageInteraction(i, "выполняю")
+	go func() {
+		members, err := d.getAllMembers(i.GuildID)
+		if err != nil {
+			d.logger.Errorf("Error while getting members: %s", err)
+			return
+		}
+		for _, member := range members {
+			for _, role := range member.Roles {
+				if role == d.cfg.RegRoleID {
+					d.removeRole(i.GuildID, d.cfg.RegRoleID, member.User.ID)
+					continue
+				}
+			}
+		}
+		_, err = d.db.Exec(`insert into discord_queue (uid) select uid from discord_users`)
+		if err != nil {
+			d.logger.Errorf("Error while inserting into discord_queue: %s", err)
+			return
+		}
+		d.logger.Infof("Command removeUnverified: Done")
+	}()
 }

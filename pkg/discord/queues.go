@@ -11,18 +11,63 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 )
 
-const guild = "719969719871995958"
+func (d *Discord) getGroupsRole(id int) (string, string) {
+	if id == -1 {
+		return "", ""
+	}
+	rows, err := d.db.Query("SELECT id, ds_role_leader, ds_role_member_id FROM groups WHERE id = ?", id)
+	defer rows.Close()
+
+	if err != nil {
+		d.logger.Errorf("getGroupsRole(): Error: %v", err.Error())
+		return "", ""
+	}
+	var groupId uint8
+	var dsRoleLeader, dsRoleMember string
+	for rows.Next() {
+		if err := rows.Scan(&groupId, &dsRoleLeader, &dsRoleMember); err != nil {
+			d.logger.Errorf("getGroupsRole(): Error: %v", err.Error())
+			continue
+		}
+		return dsRoleLeader, dsRoleMember
+	}
+	return "", ""
+}
+
+func (d *Discord) isLeaderGroup(id int, steamID string) bool {
+	var creator, leader string
+	rows, err := d.db.Query("SELECT creator, leader FROM groups WHERE id = ?", id)
+	defer rows.Close()
+	if err != nil {
+		d.logger.Errorf("isLeaderGroup(): Error: %v", err.Error())
+		return false
+	}
+	for rows.Next() {
+		if err := rows.Scan(&creator, &leader); err != nil {
+			d.logger.Errorf("isLeaderGroup(): Error: %v", err.Error())
+			continue
+		}
+		if creator == steamID || leader == steamID {
+			return true
+		}
+	}
+	return false
+}
 
 func (d *Discord) listenQueue() {
 	type player struct {
-		ds    string
-		steam string
+		ds         string
+		steam      string
+		donorLevel int
+		groupId    int
 	}
 
 	_getQueue := func() []*player {
 		var queue []*player
 
-		rows, err := d.db.Query("select discord_users.discord_uid, discord_users.uid from discord_users inner join discord_queue dq on discord_users.uid = dq.uid")
+		rows, err := d.db.Query(`select discord_users.discord_uid, discord_users.uid, p.donorlevel, p.group_id from discord_users 
+    		inner join players p on discord_users.uid = p.playerid		
+    		inner join discord_queue dq on discord_users.uid = dq.uid order by dq.id asc`)
 		defer rows.Close()
 		if err != nil {
 			d.logger.Errorf("Error getting queue: %s", err.Error())
@@ -30,7 +75,7 @@ func (d *Discord) listenQueue() {
 		}
 		for rows.Next() {
 			var t player
-			if err := rows.Scan(&t.ds, &t.steam); err != nil {
+			if err := rows.Scan(&t.ds, &t.steam, &t.donorLevel, &t.groupId); err != nil {
 				d.logger.Errorf("Error getting queue: %s", err.Error())
 				return nil
 			}
@@ -48,20 +93,68 @@ func (d *Discord) listenQueue() {
 			return
 		}
 		if fullName.Valid {
-			err = d.ds.GuildMemberNickname(guild, v.ds, fullName.String)
+			err = d.ds.GuildMemberNickname(d.cfg.GuildID, v.ds, fullName.String)
 			if err != nil {
 				d.logger.Errorf("Error setting player name (%s): %s", v.steam, err.Error())
 				return
 			}
 			return
 		}
-		err = d.ds.GuildMemberNickname(guild, v.ds, name.String)
+		err = d.ds.GuildMemberNickname(d.cfg.GuildID, v.ds, name.String)
 		if err != nil {
 			d.logger.Errorf("Error setting player name (%s): %s", v.steam, err.Error())
 			return
 		}
 	}
 	_reRole := func(v *player) {
+		_, err := d.ds.GuildMember(d.cfg.GuildID, v.ds)
+		if err != nil {
+			d.deleteUserFromVerified(v.ds)
+			return
+		}
+		if !d.haveRole(d.cfg.GuildID, d.cfg.RegRoleID, v.ds) {
+			err := d.setRole(d.cfg.GuildID, d.cfg.RegRoleID, v.ds)
+			if err != nil {
+				d.logger.Errorf("Error setting role (%s): %s", v.steam, err.Error())
+				return
+			}
+		}
+		if v.donorLevel > 0 {
+			if !d.haveRole(d.cfg.GuildID, d.cfg.VipRole, v.ds) {
+				err := d.setRole(d.cfg.GuildID, d.cfg.VipRole, v.ds)
+				if err != nil {
+					d.logger.Errorf("Error setting role (%s): %s", v.steam, err.Error())
+					return
+				}
+			}
+		} else {
+			if d.haveRole(d.cfg.GuildID, d.cfg.VipRole, v.ds) {
+				d.removeRole(d.cfg.GuildID, d.cfg.VipRole, v.ds)
+			}
+		}
+		groupRoles := d.getGroupRoles()
+		for _, gr := range groupRoles {
+			if d.haveRole(d.cfg.GuildID, gr, v.ds) {
+				d.removeRole(d.cfg.GuildID, gr, v.ds)
+			}
+		}
+
+		if v.groupId > 0 {
+			lead, member := d.getGroupsRole(v.groupId)
+			if d.isLeaderGroup(v.groupId, v.steam) {
+				err := d.setRole(d.cfg.GuildID, lead, v.ds)
+				if err != nil {
+					d.logger.Errorf("Error setting role (%s): %s", v.steam, err.Error())
+					return
+				}
+			} else {
+				err := d.setRole(d.cfg.GuildID, member, v.ds)
+				if err != nil {
+					d.logger.Errorf("Error setting role (%s): %s", v.steam, err.Error())
+					return
+				}
+			}
+		}
 	}
 
 	for _, v := range _getQueue() {

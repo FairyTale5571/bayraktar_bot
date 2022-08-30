@@ -12,6 +12,10 @@ type Config struct {
 	DiscordToken  string `env:"DISCORD_TOKEN,required"`
 	TelegramToken string `env:"TELEGRAM_TOKEN"`
 
+	VipRole   string `env:"VIP_ROLE_ID,required"`
+	GuildID   string `env:"GUILD_ID,required"`
+	RegRoleID string `env:"REG_ROLE_ID,required"`
+
 	PostPassword string `env:"POST_PASSWORD,required"`
 
 	MysqlUri string `env:"MYSQL_URI,required"`

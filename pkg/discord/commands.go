@@ -12,8 +12,12 @@ var commands = []*discordgo.ApplicationCommand{
 		Description: "Много ответов на много вопросов",
 	},
 	{
-		Name:        "re-role",
-		Description: "Перепроверяет выданные роли",
+		Name:        "delete-unverified",
+		Description: "Удалить неавторизованных пользователей",
+	},
+	{
+		Name:        "remove-unverified",
+		Description: "Убрать местного жителя у неавторизованных пользователей",
 	},
 	{
 		Name:        "get-him",

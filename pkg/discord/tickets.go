@@ -2,9 +2,9 @@ package discord
 
 import (
 	"fmt"
-	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
 )
 
 const (
