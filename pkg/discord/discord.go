@@ -11,7 +11,7 @@ import (
 
 type Discord struct {
 	cfg    *models.Config
-	logger *logger.LoggerWrapper
+	logger *logger.Wrapper
 	ds     *discordgo.Session
 	db     *database.DB
 	rdb    *redis.Redis

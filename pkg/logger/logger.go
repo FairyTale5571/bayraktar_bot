@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 
+	"github.com/disgoorg/dislog"
+	"github.com/disgoorg/snowflake"
 	"github.com/sirupsen/logrus"
 )
 
@@ -33,99 +35,110 @@ type Logger interface {
 	FatalfCtx(ctx context.Context, format string, args ...interface{})
 }
 
-type LoggerWrapper struct {
+type Wrapper struct {
 	lg    *logrus.Logger
 	entry *logrus.Entry
 }
 
-func New(service string) *LoggerWrapper {
-	log := &LoggerWrapper{lg: logrus.New()}
+func New(service string) *Wrapper {
 
+	log := &Wrapper{lg: logrus.New()}
+	dlog, err := dislog.New(
+		// Sets which logging levels to send to the webhook
+		dislog.WithLogLevels(dislog.TraceLevelAndAbove...),
+		// Sets webhook id & token
+		dislog.WithWebhookIDToken(snowflake.Snowflake(os.Getenv("LOG_SNOWFLAKE")), os.Getenv("LOG_HOOK")),
+	)
+	if err != nil {
+		log.Errorf("Failed to initialize dislog: %s", err)
+	}
 	log.lg.SetFormatter(&logrus.JSONFormatter{})
 	log.lg.SetOutput(os.Stdout)
 	log.lg.SetLevel(logrus.DebugLevel)
 	log.entry = log.lg.WithFields(logrus.Fields{
 		"service": service,
 	})
+	defer dlog.Close(context.Background())
+	log.lg.AddHook(dlog)
 	return log
 }
 
-func (logger *LoggerWrapper) Debug(args ...interface{}) {
+func (logger *Wrapper) Debug(args ...interface{}) {
 	logger.entry.Debug(args...)
 }
 
-func (logger *LoggerWrapper) Info(args ...interface{}) {
+func (logger *Wrapper) Info(args ...interface{}) {
 	logger.entry.Info(args...)
 }
 
-func (logger *LoggerWrapper) Warn(args ...interface{}) {
+func (logger *Wrapper) Warn(args ...interface{}) {
 	logger.entry.Warn(args...)
 }
 
-func (logger *LoggerWrapper) Error(args ...interface{}) {
+func (logger *Wrapper) Error(args ...interface{}) {
 	logger.entry.Error(args...)
 }
 
-func (logger *LoggerWrapper) Fatal(args ...interface{}) {
+func (logger *Wrapper) Fatal(args ...interface{}) {
 	logger.entry.Fatal(args...)
 }
 
-func (logger *LoggerWrapper) DebugCtx(ctx context.Context, args ...interface{}) {
+func (logger *Wrapper) DebugCtx(ctx context.Context, args ...interface{}) {
 	logger.entry.Debug(args...)
 }
 
-func (logger *LoggerWrapper) InfoCtx(ctx context.Context, args ...interface{}) {
+func (logger *Wrapper) InfoCtx(ctx context.Context, args ...interface{}) {
 	logger.entry.Info(args...)
 }
 
-func (logger *LoggerWrapper) WarnCtx(ctx context.Context, args ...interface{}) {
+func (logger *Wrapper) WarnCtx(ctx context.Context, args ...interface{}) {
 	logger.entry.Warn(args...)
 }
 
-func (logger *LoggerWrapper) ErrorCtx(ctx context.Context, args ...interface{}) {
+func (logger *Wrapper) ErrorCtx(ctx context.Context, args ...interface{}) {
 	logger.entry.Error(args...)
 }
 
-func (logger *LoggerWrapper) FatalCtx(ctx context.Context, args ...interface{}) {
+func (logger *Wrapper) FatalCtx(ctx context.Context, args ...interface{}) {
 	logger.entry.Fatal(args...)
 }
 
-func (logger *LoggerWrapper) Debugf(format string, args ...interface{}) {
+func (logger *Wrapper) Debugf(format string, args ...interface{}) {
 	logger.entry.Debugf(format, args...)
 }
 
-func (logger *LoggerWrapper) Infof(format string, args ...interface{}) {
+func (logger *Wrapper) Infof(format string, args ...interface{}) {
 	logger.entry.Infof(format, args...)
 }
 
-func (logger *LoggerWrapper) Warnf(format string, args ...interface{}) {
+func (logger *Wrapper) Warnf(format string, args ...interface{}) {
 	logger.entry.Warnf(format, args...)
 }
 
-func (logger *LoggerWrapper) Errorf(format string, args ...interface{}) {
+func (logger *Wrapper) Errorf(format string, args ...interface{}) {
 	logger.entry.Errorf(format, args...)
 }
 
-func (logger *LoggerWrapper) Fatalf(format string, args ...interface{}) {
+func (logger *Wrapper) Fatalf(format string, args ...interface{}) {
 	logger.entry.Fatalf(format, args...)
 }
 
-func (logger *LoggerWrapper) DebugfCtx(ctx context.Context, format string, args ...interface{}) {
+func (logger *Wrapper) DebugfCtx(ctx context.Context, format string, args ...interface{}) {
 	logger.entry.Debugf(format, args...)
 }
 
-func (logger *LoggerWrapper) InfofCtx(ctx context.Context, format string, args ...interface{}) {
+func (logger *Wrapper) InfofCtx(ctx context.Context, format string, args ...interface{}) {
 	logger.entry.Infof(format, args...)
 }
 
-func (logger *LoggerWrapper) WarnfCtx(ctx context.Context, format string, args ...interface{}) {
+func (logger *Wrapper) WarnfCtx(ctx context.Context, format string, args ...interface{}) {
 	logger.entry.Warnf(format, args...)
 }
 
-func (logger *LoggerWrapper) ErrorfCtx(ctx context.Context, format string, args ...interface{}) {
+func (logger *Wrapper) ErrorfCtx(ctx context.Context, format string, args ...interface{}) {
 	logger.entry.Errorf(format, args...)
 }
 
-func (logger *LoggerWrapper) FatalfCtx(ctx context.Context, format string, args ...interface{}) {
+func (logger *Wrapper) FatalfCtx(ctx context.Context, format string, args ...interface{}) {
 	logger.entry.Fatalf(format, args...)
 }

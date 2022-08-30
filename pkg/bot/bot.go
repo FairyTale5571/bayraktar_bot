@@ -6,7 +6,7 @@ import (
 )
 
 type Bot struct {
-	logger *logger.LoggerWrapper
+	logger *logger.Wrapper
 
 	bot     *tgbotapi.BotAPI
 	updates tgbotapi.UpdatesChannel

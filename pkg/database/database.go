@@ -10,7 +10,7 @@ import (
 
 type DB struct {
 	db     *sql.DB
-	logger *logger.LoggerWrapper
+	logger *logger.Wrapper
 }
 
 func New(uri string) (*DB, error) {

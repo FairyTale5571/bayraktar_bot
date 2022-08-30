@@ -12,7 +12,7 @@ import (
 
 type Redis struct {
 	db     *redis.Client
-	logger *logger.LoggerWrapper
+	logger *logger.Wrapper
 }
 
 var ctx = context.Background()

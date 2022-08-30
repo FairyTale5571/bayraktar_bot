@@ -14,7 +14,7 @@ type App struct {
 	Discord *discord.Discord
 	DB      *database.DB
 	Config  *models.Config
-	Logger  *logger.LoggerWrapper
+	Logger  *logger.Wrapper
 	Server  *server.Router
 }
 

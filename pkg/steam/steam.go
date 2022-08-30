@@ -19,7 +19,7 @@ const (
 
 type Steam struct {
 	cfg    *models.Config
-	logger *logger.LoggerWrapper
+	logger *logger.Wrapper
 }
 
 func New(cfg *models.Config) *Steam {
