@@ -17,7 +17,7 @@ type Router struct {
 	router   *gin.Engine
 	cfg      *models.Config
 	bot      *discord.Discord
-	logger   *logger.LoggerWrapper
+	logger   *logger.Wrapper
 	db       *database.DB
 	rdb      *redis.Redis
 	settings AuthConfig
