@@ -30,6 +30,9 @@ func (d *Discord) serializeEmbed(embeds models.Embed) *discordgo.MessageEmbed {
 			Text:    embeds.Footer.Text,
 			IconURL: embeds.Footer.IconUrl,
 		},
+		Image: &discordgo.MessageEmbedImage{
+			URL: embeds.Image.Url,
+		},
 		Fields:    d.madeFields(embeds.Fields),
 		URL:       embeds.Url,
 		Timestamp: embeds.Timestamp,
