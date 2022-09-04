@@ -70,15 +70,52 @@ func (r *Router) mainRouter() {
 	r.router.GET("/redirect/:to", r.redirect)
 	r.router.GET("/plugin", r.plugin)
 
+	r.router.GET("/site", r.site)
+
 	apiGroup := r.router.Group("/api")
 	{
-		apiGroup.GET("/economy", r.economy)
-		apiGroup.POST("/mailing/:guild", r.mailingUsers)
-		apiGroup.POST("/direct/:userid", r.sendDirect)
-		apiGroup.POST("/channel/:guild/:channel", r.sendToChannel)
+		apiGame := apiGroup.Group("/game")
+		{
+			apiGame.GET("/economy", r.economy)
+			apiGame.GET("/gov", r.government)
+			apiTop := apiGame.Group("/top")
+			{
+				apiTop.GET("/players", r.topPlayer)
+				apiTop.GET("/gangs", r.topGang)
+				apiTop.GET("/wanted", r.wanted)
+			}
+		}
+
+		apiDiscord := apiGroup.Group("/discord")
+		{
+			apiDiscord.POST("/mailing/:guild", r.mailingUsers) // not use, bot will be banned
+			apiDiscord.POST("/direct/:userid", r.sendDirect)
+			apiDiscord.POST("/channel/:guild/:channel", r.sendToChannel)
+
+			apiDiscord.GET("/guilds", nil)
+			apiDiscord.GET("/channels/:guild", nil)
+			apiDiscord.GET("/members/:guild", nil)
+			apiDiscord.GET("/roles/:guild", nil)
+		}
 	}
 }
 
 func (r *Router) plugin(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, r.cfg.URL+"/assets/files/task_force_radio.ts3_plugin")
+}
+
+func (r *Router) site(c *gin.Context) {
+	c.HTML(http.StatusOK, "/assets/views/login_button.html", nil)
+}
+
+func (r *Router) topPlayer(c *gin.Context) {
+
+}
+
+func (r *Router) topGang(c *gin.Context) {
+
+}
+
+func (r *Router) wanted(c *gin.Context) {
+
 }
