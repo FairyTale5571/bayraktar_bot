@@ -134,3 +134,47 @@ func (r *Router) sendDirect(c *gin.Context) {
 	})
 	go r.bot.SendDirect(user, embeds)
 }
+
+func (r *Router) government(c *gin.Context) {
+	var govResponse models.Government
+	govs, err := r.db.Query(`
+		select count(uid) c, "police" t from players where side = "cop" and connected = 1
+    	union select count(uid) c, "all" t from players where connected = 1
+    union select count(uid) c, "ems" t from players where side = "med" and connected = 1
+    union select count(uid) c, "rev" t from players where side = "reb" and connected = 1
+    union select count(uid) c, "civ" t from players where side = "civ" and connected = 1;
+	`)
+	defer govs.Close()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+			"point": "govs",
+		})
+		return
+	}
+
+	groupList, err := r.db.Query(`
+		select id, premial_var from groups`)
+	defer groupList.Close()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+			"point": "groups",
+		})
+		return
+	}
+	plrActiveList, err := r.db.Query(`
+		select group_id from players where connected = 1 and group_id > 0`)
+	defer plrActiveList.Close()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+			"point": "players",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"gov":     govResponse,
+	})
+}
