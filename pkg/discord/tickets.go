@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
@@ -87,11 +88,38 @@ func (d *Discord) isTicketOpened(userID string) bool {
 	return false
 }
 
-func (d *Discord) createTickets(guildID string, user *discordgo.User) (*discordgo.Channel, error) {
-	if d.isTicketOpened(user.ID) {
+func (d *Discord) checkAuthorize(member *discordgo.Member) {
+	for _, role := range member.Roles {
+		if role == d.cfg.RegRoleID {
+			return
+		}
+	}
+	ch, err := d.ds.UserChannelCreate(member.User.ID)
+	if err != nil {
+		d.logger.Errorf("cant create channel: %v", err)
+		return
+	}
+	_, err = d.ds.ChannelMessageSendComplex(ch.ID, &discordgo.MessageSend{
+		Embed: &discordgo.MessageEmbed{
+			Color: 0xFFC500,
+			Title: "Необходима регистрация",
+			Description: "Здравствуйте! Вы получили это сообщение, так как вы создали тикет, но все еще не авторизованы на сервере.\n" +
+				"Для того чтобы мы могли вам помочь как можно быстрее, пожалуйста, пройдите авторизацию в канале <#872192873825701968>.\n" +
+				"**Если вы не заходили на сервер и у вас проблема с входом, то проигнорируйте данное сообщение**",
+		},
+	})
+	if err != nil {
+		d.logger.Errorf("cant send message: %v", err)
+		return
+	}
+}
+
+func (d *Discord) createTickets(guildID string, user *discordgo.Member) (*discordgo.Channel, error) {
+	if d.isTicketOpened(user.User.ID) {
 		return nil, errorUtils.ErrTicketOpened
 	}
-	ticketId, err := d.saveTicket(user.ID)
+	d.checkAuthorize(user)
+	ticketId, err := d.saveTicket(user.User.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -128,12 +156,18 @@ func (d *Discord) createTickets(guildID string, user *discordgo.User) (*discordg
 		d.logger.Errorf("cant send message: %v", err)
 		return nil, err
 	}
-	err = d.ds.ChannelPermissionSet(channel.ID, user.ID, discordgo.PermissionOverwriteTypeMember, 117824, 0)
+	err = d.ds.ChannelPermissionSet(channel.ID, user.User.ID, discordgo.PermissionOverwriteTypeMember, 117824, 0)
 	if err != nil {
 		d.logger.Errorf("cant set permission: %v", err)
 		return nil, err
 	}
 	return channel, nil
+}
+
+func (d *Discord) generateReport(channelID, ownerID, closerID string) *models.TicketReport {
+	var res models.TicketReport
+
+	return &res
 }
 
 func (d *Discord) closeTicket(s *discordgo.Session, i *discordgo.InteractionCreate) {

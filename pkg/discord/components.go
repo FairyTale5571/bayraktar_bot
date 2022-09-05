@@ -28,7 +28,7 @@ func (d *Discord) createTicket(s *discordgo.Session, i *discordgo.InteractionCre
 		d.logger.Errorf("createTicket(): Error interaction respond: %s", err.Error())
 		return
 	}
-	ch, err := d.createTickets(i.GuildID, i.Interaction.Member.User)
+	ch, err := d.createTickets(i.GuildID, i.Interaction.Member)
 	if err != nil {
 		if err == errorUtils.ErrTicketOpened {
 			resText := fmt.Sprintf("У вас уже активен тикет, закройте предыдущий перед открытием нового")
