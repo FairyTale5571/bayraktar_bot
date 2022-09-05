@@ -124,7 +124,7 @@ func (d *Discord) createTickets(guildID string, user *discordgo.Member) (*discor
 		return nil, err
 	}
 	data := discordgo.GuildChannelCreateData{
-		Name:                 fmt.Sprintf("support-%d", ticketId),
+		Name:                 fmt.Sprintf("%s-%d", user.User.Username, ticketId),
 		Type:                 discordgo.ChannelTypeGuildText,
 		PermissionOverwrites: nil,
 		ParentID:             parentActual,

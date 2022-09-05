@@ -1,5 +1,10 @@
 package models
 
+import (
+	"github.com/bwmarrin/discordgo"
+	"time"
+)
+
 type Embed struct {
 	Author struct {
 		Name    string `json:"name"`
@@ -30,4 +35,13 @@ type Embed struct {
 type Embeds struct {
 	Content string  `json:"content"`
 	Embeds  []Embed `json:"embeds"`
+}
+
+type TicketReport struct {
+	ChannelID string
+	AuthorID  string
+	ClosedBy  string
+	Messages  []*discordgo.Message
+	OpenedAt  time.Time
+	ClosedAt  time.Time
 }
