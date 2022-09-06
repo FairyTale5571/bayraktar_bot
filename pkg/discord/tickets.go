@@ -3,15 +3,26 @@ package discord
 import (
 	"fmt"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
 )
 
 const (
-	parentActual  = "955941824516747294"
-	parentArchive = "1012393930450534450"
+	parentActual   = "955941824516747294"
+	channelReports = "1016722224461402153"
 )
+
+func (d *Discord) getTicketCreateDate(channelID string) time.Time {
+	var res time.Time
+	rows := d.db.QueryRow("SELECT insert_date FROM discord_tickets WHERE channel_id = ?", channelID)
+	if err := rows.Scan(&res); err != nil {
+		d.logger.Errorf("cant scan ticket create date: %v", err)
+		return res
+	}
+	return res
+}
 
 func (d *Discord) printCreateTicket(channelID string) {
 	embed := &discordgo.MessageEmbed{
@@ -164,10 +175,98 @@ func (d *Discord) createTickets(guildID string, user *discordgo.Member) (*discor
 	return channel, nil
 }
 
-func (d *Discord) generateReport(channelID, ownerID, closerID string) *models.TicketReport {
+func (d *Discord) serializeReport(channelID, closerID string) (*models.TicketReport, error) {
 	var res models.TicketReport
+	channel, err := d.ds.Channel(channelID)
+	if err != nil {
+		d.logger.Errorf("cant get channel: %v", err)
+		return nil, err
+	}
+	res.ChannelName = channel.Name
+	res.ChannelID = channel.ID
+	ticketOwner, err := d.getTicketOwner(channel.ID)
+	if err != nil {
+		d.logger.Errorf("cant get ticket owner: %v", err)
+		return nil, err
+	}
+	res.AuthorID = ticketOwner
+	res.ClosedBy = closerID
+	res.ClosedAt = time.Now()
+	res.OpenedAt = d.getTicketCreateDate(channel.ID)
 
-	return &res
+	messages, err := d.ds.ChannelMessages(channel.ID, 100, "", "", "")
+	if err != nil {
+		d.logger.Errorf("cant get messages: %v", err)
+		return nil, err
+	}
+	res.Messages = messages
+
+	return &res, nil
+}
+
+func (d *Discord) sendReport(report *models.TicketReport) {
+	embed := discordgo.MessageEmbed{
+		Title: "Отчет по тикету",
+		Description: fmt.Sprintf("Автор тикета: <@%s>\nЗакрыл тикет: <@%s>\nВремя открытия: %s\nВремя закрытия: %s\n**Содержание**:\n",
+			report.AuthorID,
+			report.ClosedBy,
+			report.OpenedAt.Format("15:04:05 02-01-2006"),
+			report.ClosedAt.Format("15:04:05 02-01-2006"),
+		),
+		Color: 0x00ff00,
+	}
+	for i := len(report.Messages) - 1; i >= 0; i-- {
+		if report.Messages[i].Content == "" {
+			continue
+		}
+		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+			Name:   fmt.Sprintf("%s: %s", report.Messages[i].Author.Username, report.Messages[i].Timestamp.Format("02.01.2006 15:04:05")),
+			Value:  report.Messages[i].Content,
+			Inline: false,
+		})
+	}
+	// send to channel with reports
+	_, err := d.ds.ChannelMessageSendEmbed(channelReports, &embed)
+	if err != nil {
+		d.logger.Errorf("cant send message: %v", err)
+	}
+	// send to user
+	userChannel, err := d.ds.UserChannelCreate(report.AuthorID)
+	if err != nil {
+		d.logger.Errorf("cant create channel: %v", err)
+		return
+	}
+	_, err = d.ds.ChannelMessageSendComplex(userChannel.ID, &discordgo.MessageSend{
+		Embed: &embed,
+		/*
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.Button{
+							Label: "Мне понравилось обслуживание",
+							Emoji: discordgo.ComponentEmoji{
+								Name: "👍",
+							},
+							CustomID: "problem_solved",
+							Style:    discordgo.SuccessButton,
+						},
+						discordgo.Button{
+							Label: "Обслуживание не понравилось",
+							Emoji: discordgo.ComponentEmoji{
+								Name: "👎",
+							},
+							CustomID: "problem_not_solved",
+							Style:    discordgo.DangerButton,
+						},
+					},
+				},
+			},
+
+		*/
+	})
+	if err != nil {
+		d.logger.Errorf("cant send message: %v", err)
+	}
 }
 
 func (d *Discord) closeTicket(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -179,6 +278,9 @@ func (d *Discord) closeTicket(s *discordgo.Session, i *discordgo.InteractionCrea
 	})
 	if err != nil {
 		d.logger.Errorf("cant respond interaction: %v", err)
+	}
+	if report, err := d.serializeReport(i.ChannelID, i.Member.User.ID); err == nil {
+		d.sendReport(report)
 	}
 	_ = d.ds.ChannelMessageDelete(i.Interaction.ChannelID, i.Interaction.Message.ID)
 

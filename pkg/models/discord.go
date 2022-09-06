@@ -38,10 +38,11 @@ type Embeds struct {
 }
 
 type TicketReport struct {
-	ChannelID string
-	AuthorID  string
-	ClosedBy  string
-	Messages  []*discordgo.Message
-	OpenedAt  time.Time
-	ClosedAt  time.Time
+	ChannelName string
+	ChannelID   string
+	AuthorID    string
+	ClosedBy    string
+	Messages    []*discordgo.Message
+	OpenedAt    time.Time
+	ClosedAt    time.Time
 }
