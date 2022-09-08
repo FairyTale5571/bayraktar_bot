@@ -45,7 +45,10 @@ func New(cfg *models.Config, bot *discord.Discord, db *database.DB, rdb *redis.R
 
 func (r *Router) Start() {
 	r.logger.Info("gin opened")
+	r.router.LoadHTMLGlob("webApp/static/*.html")
+
 	r.router.Static("/assets/", "webApp/assets/")
+
 	r.mainRouter()
 	err := r.router.Run(":" + r.cfg.PORT)
 	if err != nil {
@@ -76,6 +79,8 @@ func (r *Router) mainRouter() {
 	{
 		apiGame := apiGroup.Group("/game")
 		{
+			apiGame.GET("/adminRules", r.adminRules)
+
 			apiGame.GET("/economy", r.economy)
 			apiGame.GET("/gov", r.government)
 			apiTop := apiGame.Group("/top")
@@ -118,4 +123,8 @@ func (r *Router) topGang(c *gin.Context) {
 
 func (r *Router) wanted(c *gin.Context) {
 
+}
+
+func (r *Router) adminRules(c *gin.Context) {
+	c.HTML(http.StatusOK, "admin_rules.html", nil)
 }
