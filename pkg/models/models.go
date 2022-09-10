@@ -1,10 +1,8 @@
 package models
 
 import (
-	"os"
-
-	discordoauth "github.com/ravener/discord-oauth2"
-	"golang.org/x/oauth2"
+	"fmt"
+	"time"
 )
 
 type Config struct {
@@ -26,10 +24,29 @@ type Config struct {
 	Debug bool   `env:"DEBUG,required"`
 }
 
-var DiscordOauth = oauth2.Config{
-	RedirectURL:  os.Getenv("URL") + "/auth/discord/callback",
-	ClientID:     os.Getenv("DISCORD_CLIENT"),
-	ClientSecret: os.Getenv("DISCORD_SECRET"),
-	Scopes:       []string{discordoauth.ScopeIdentify, discordoauth.ScopeGuilds},
-	Endpoint:     discordoauth.Endpoint,
+type News struct {
+	ID          int
+	Title       string
+	Description string
+	Link        string
+	Published   time.Time
+}
+
+type NewsArray struct {
+	News []News
+}
+
+func (n News) String() string {
+	return fmt.Sprintf("[\"%s\", \"%s\", \"%s\", \"%s\"]", n.Title, n.Description, n.Link, n.Published.Format("15:04:05 01-02-2006"))
+}
+
+func (n NewsArray) MakeArmaArray() string {
+	var res = "["
+	for _, news := range n.News {
+		res += news.String() + ","
+
+	}
+	res = res[:len(res)-1]
+	res += "]"
+	return res
 }

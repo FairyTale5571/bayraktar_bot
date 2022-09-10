@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/fairytale5571/bayraktar_bot/pkg/cache"
 	"net/http"
 
 	"github.com/fairytale5571/bayraktar_bot/pkg/database"
@@ -10,21 +11,16 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2"
 )
 
 type Router struct {
-	router   *gin.Engine
-	cfg      *models.Config
-	bot      *discord.Discord
-	logger   *logger.Wrapper
-	db       *database.DB
-	rdb      *redis.Redis
-	settings AuthConfig
-}
-
-type AuthConfig struct {
-	DiscordConfig oauth2.Config
+	router *gin.Engine
+	cfg    *models.Config
+	bot    *discord.Discord
+	logger *logger.Wrapper
+	db     *database.DB
+	rdb    *redis.Redis
+	cache  *cache.Config
 }
 
 func New(cfg *models.Config, bot *discord.Discord, db *database.DB, rdb *redis.Redis) *Router {
@@ -35,10 +31,7 @@ func New(cfg *models.Config, bot *discord.Discord, db *database.DB, rdb *redis.R
 		rdb:    rdb,
 		router: gin.Default(),
 		logger: logger.New("server"),
-	}
-
-	r.settings = AuthConfig{
-		DiscordConfig: models.DiscordOauth,
+		cache:  cache.SetupCache(rdb),
 	}
 	return &r
 }
@@ -80,6 +73,7 @@ func (r *Router) mainRouter() {
 		apiGame := apiGroup.Group("/game")
 		{
 			apiGame.GET("/adminRules", r.adminRules)
+			apiGame.GET("/news", r.news)
 
 			apiGame.GET("/economy", r.economy)
 			apiGame.GET("/gov", r.government)
