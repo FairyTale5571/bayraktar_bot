@@ -1,9 +1,199 @@
 basePath: /
-host: bot.rocket-rp.fun
+definitions:
+  models.Economy:
+    properties:
+      downPricePerItem:
+        type: number
+      illegal:
+        type: boolean
+      influenced:
+        type: string
+      lastUpdate:
+        type: string
+      localize:
+        type: string
+      maxPrice:
+        type: integer
+      minPrice:
+        type: integer
+      price:
+        type: integer
+      randomDownPrice:
+        type: boolean
+      randomMax:
+        type: integer
+      randomMin:
+        type: integer
+      resourceName:
+        type: string
+    type: object
+  models.Embed:
+    properties:
+      author:
+        properties:
+          icon_url:
+            type: string
+          name:
+            type: string
+          url:
+            type: string
+        type: object
+      color:
+        type: integer
+      description:
+        type: string
+      fields:
+        items:
+          properties:
+            name:
+              type: string
+            value:
+              type: string
+          type: object
+        type: array
+      footer:
+        properties:
+          icon_url:
+            type: string
+          text:
+            type: string
+        type: object
+      image:
+        properties:
+          url:
+            type: string
+        type: object
+      thumbnail:
+        properties:
+          url:
+            type: string
+        type: object
+      timestamp:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  models.Embeds:
+    properties:
+      content:
+        type: string
+      embeds:
+        items:
+          $ref: '#/definitions/models.Embed'
+        type: array
+    type: object
+  models.Error:
+    properties:
+      error:
+        type: string
+    type: object
+host: localhost:3200
 info:
   contact: {}
   description: API for Bayraktar bot
   title: Bayraktar Bot
   version: "1.0"
-paths: {}
+paths:
+  /api/discord/direct/{userid}:
+    post:
+      consumes:
+      - application/json
+      description: send message to user
+      parameters:
+      - description: user id
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: password
+        in: header
+        name: X-Pass
+        required: true
+        type: string
+      - description: embeds
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Embeds'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Discord send to user
+      tags:
+      - discord
+  /api/discord/send/channel/{guild}/{channel}:
+    post:
+      consumes:
+      - application/json
+      description: send message to channel
+      parameters:
+      - description: guild id
+        in: path
+        name: guild
+        required: true
+        type: string
+      - description: channel id
+        in: path
+        name: channel
+        required: true
+        type: string
+      - description: password
+        in: header
+        name: X-Pass
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Discord send to channel
+      tags:
+      - discord
+  /api/game/economy:
+    get:
+      description: get current economy
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Economy'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get game
+      tags:
+      - game
+  /api/game/news:
+    get:
+      description: get array serialized to arma array
+      responses:
+        "200":
+          description: '[[\"title\",\"link\",\"description\",\"published\"]]'
+          schema:
+            type: string
+        "500":
+          description: '[]'
+          schema:
+            type: string
+      summary: Get news
+      tags:
+      - game
+schemes:
+- http
+- https
 swagger: "2.0"

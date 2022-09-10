@@ -28,12 +28,22 @@ func (r *Router) getNews() string {
 	return news.MakeArmaArray()
 }
 
+// @Summary Get news
+// @Description get array serialized to arma array
+// @Tags game
+// @Success 	200 	{string}  "[[\"title\",\"link\",\"description\",\"published\"]]"
+// @Failure 	500 	{string}  "[]"
+// @Router /api/game/news [get]
 func (r *Router) news(c *gin.Context) {
 	if cached, err := r.cache.Get("newsFeed"); cached != "" && err == nil {
 		c.String(http.StatusOK, cached)
 		return
 	}
 	feed := r.getNews()
+	if feed == "[\"Undefined\"]" {
+		c.String(http.StatusInternalServerError, "[]")
+		return
+	}
 	c.String(http.StatusOK, feed)
 	if err := r.cache.Set("newsFeed", feed); err != nil {
 		return

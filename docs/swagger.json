@@ -1,4 +1,8 @@
 {
+    "schemes": [
+        "http",
+        "https"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "API for Bayraktar bot",
@@ -6,7 +10,294 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "bot.rocket-rp.fun",
+    "host": "localhost:3200",
     "basePath": "/",
-    "paths": {}
+    "paths": {
+        "/api/discord/direct/{userid}": {
+            "post": {
+                "description": "send message to user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discord"
+                ],
+                "summary": "Discord send to user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "user",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "X-Pass",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "embeds",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Embeds"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/discord/send/channel/{guild}/{channel}": {
+            "post": {
+                "description": "send message to channel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discord"
+                ],
+                "summary": "Discord send to channel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "guild id",
+                        "name": "guild",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "channel id",
+                        "name": "channel",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "X-Pass",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/game/economy": {
+            "get": {
+                "description": "get current economy",
+                "tags": [
+                    "game"
+                ],
+                "summary": "Get game",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Economy"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/game/news": {
+            "get": {
+                "description": "get array serialized to arma array",
+                "tags": [
+                    "game"
+                ],
+                "summary": "Get news",
+                "responses": {
+                    "200": {
+                        "description": "[[\\\"title\\\",\\\"link\\\",\\\"description\\\",\\\"published\\\"]]",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "[]",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Economy": {
+            "type": "object",
+            "properties": {
+                "downPricePerItem": {
+                    "type": "number"
+                },
+                "illegal": {
+                    "type": "boolean"
+                },
+                "influenced": {
+                    "type": "string"
+                },
+                "lastUpdate": {
+                    "type": "string"
+                },
+                "localize": {
+                    "type": "string"
+                },
+                "maxPrice": {
+                    "type": "integer"
+                },
+                "minPrice": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "randomDownPrice": {
+                    "type": "boolean"
+                },
+                "randomMax": {
+                    "type": "integer"
+                },
+                "randomMin": {
+                    "type": "integer"
+                },
+                "resourceName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Embed": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "object",
+                    "properties": {
+                        "icon_url": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "color": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "footer": {
+                    "type": "object",
+                    "properties": {
+                        "icon_url": {
+                            "type": "string"
+                        },
+                        "text": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "thumbnail": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Embeds": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "embeds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Embed"
+                    }
+                }
+            }
+        },
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

@@ -1,5 +1,11 @@
 package models
 
+import "time"
+
+type Error struct {
+	Err string `json:"error"`
+}
+
 type Government struct {
 	Gov struct {
 		Rule struct {
@@ -29,4 +35,19 @@ type Government struct {
 			ActiveGifts int
 		}
 	}
+}
+
+type Economy struct {
+	ResourceName     string
+	Localize         string
+	Price            int
+	MaxPrice         int
+	MinPrice         int
+	DownPricePerItem float64
+	RandomDownPrice  bool
+	RandomMax        int
+	RandomMin        int
+	Illegal          bool
+	Influenced       string
+	LastUpdate       time.Time
 }

@@ -91,7 +91,6 @@ func (r *Router) mainRouter() {
 
 		apiDiscord := apiGroup.Group("/discord")
 		{
-			apiDiscord.POST("/mailing/:guild", r.mailingUsers) // not use, bot will be banned
 			apiDiscord.POST("/direct/:userid", r.sendDirect)
 			apiDiscord.POST("/channel/:guild/:channel", r.sendToChannel)
 

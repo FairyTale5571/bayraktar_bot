@@ -13,6 +13,12 @@ const (
 	headerPass = "X-Pass"
 )
 
+// @Summary Get game
+// @Description get current economy
+// @Tags game
+// @Success 	200 			{object} 			models.Economy
+// @Failure 	500 			{object} 			models.Error
+// @Router /api/game/economy [get]
 func (r *Router) economy(c *gin.Context) {
 	rows, err := r.db.Query("SELECT * FROM economy")
 	defer rows.Close()
@@ -47,33 +53,17 @@ func (r *Router) economy(c *gin.Context) {
 	c.JSON(http.StatusOK, economies)
 }
 
-func (r *Router) mailingUsers(c *gin.Context) {
-	guild := c.Param("guild")
-	if guild == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild not found"})
-		return
-	}
-	if c.GetHeader(headerPass) != r.cfg.PostPassword {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
-		return
-	}
-	body_, err := c.GetRawData()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	var embeds models.Embeds
-	err = json.Unmarshal(body_, &embeds)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "ok",
-	})
-	go r.bot.SendMassive(guild, embeds)
-}
-
+// @Summary Discord send to channel
+// @Description send message to channel
+// @Tags discord
+// @Accept json
+// @Produce json
+// @Param guild path string true "guild id"
+// @Param channel path string true "channel id"
+// @Param X-Pass header string true "password"
+// @Success 	200
+// @Failure 	500 			{object} 			models.Error
+// @Router /api/discord/send/channel/{guild}/{channel} [post]
 func (r *Router) sendToChannel(c *gin.Context) {
 	if c.GetHeader(headerPass) != r.cfg.PostPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
@@ -107,6 +97,17 @@ func (r *Router) sendToChannel(c *gin.Context) {
 	go r.bot.SendToChannel(guild, channel, embeds)
 }
 
+// @Summary Discord send to user
+// @Description send message to user
+// @Tags discord
+// @Accept json
+// @Produce json
+// @Param user path string true "user id"
+// @Param X-Pass header string true "password"
+// @Param body body models.Embeds true "embeds"
+// @Success 	200
+// @Failure 	500 			{object} 			models.Error
+// @Router /api/discord/direct/{userid} [post]
 func (r *Router) sendDirect(c *gin.Context) {
 	if c.GetHeader(headerPass) != r.cfg.PostPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})

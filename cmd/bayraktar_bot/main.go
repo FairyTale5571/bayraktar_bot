@@ -12,8 +12,9 @@ import (
 // @version 1.0
 // @description API for Bayraktar bot
 
-// @host bot.rocket-rp.fun
+// @host localhost:3200
 // @BasePath /
+// @Schemes http https
 
 func main() {
 	a, err := app.New()
