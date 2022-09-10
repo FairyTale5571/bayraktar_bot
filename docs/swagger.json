@@ -10,7 +10,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:3200",
+    "host": "bot.rocket-rp.fun",
     "basePath": "/",
     "paths": {
         "/api/discord/direct/{userid}": {

@@ -12,7 +12,7 @@ import (
 // @version 1.0
 // @description API for Bayraktar bot
 
-// @host localhost:3200
+// @host bot.rocket-rp.fun
 // @BasePath /
 // @Schemes http https
 
