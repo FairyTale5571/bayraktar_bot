@@ -1,7 +1,6 @@
 package server
 
 import (
-	"database/sql"
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,12 +10,7 @@ func (r *Router) getNews() string {
 	var news models.NewsArray
 
 	rows, err := r.db.Query("SELECT `id`, `title`, `link`, `description`, `published` FROM newsfeed WHERE hasActive = 1 ORDER BY id DESC")
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			r.logger.Errorf("cant close rows: %v", err)
-		}
-	}(rows)
+	defer rows.Close()
 	if err != nil {
 		r.logger.Errorf("cant get news: %v", err)
 		return "[\"Undefined\"]"
@@ -35,7 +29,7 @@ func (r *Router) getNews() string {
 
 func (r *Router) news(c *gin.Context) {
 	if cached, err := r.cache.Get("newsFeed"); cached != "" && err == nil {
-		c.String(http.StatusNotModified, cached)
+		c.String(http.StatusOK, cached)
 		return
 	}
 	feed := r.getNews()
