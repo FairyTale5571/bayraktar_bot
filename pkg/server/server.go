@@ -1,9 +1,10 @@
 package server
 
 import (
-	"github.com/fairytale5571/bayraktar_bot/pkg/cache"
 	"net/http"
 
+	_ "github.com/fairytale5571/bayraktar_bot/docs"
+	"github.com/fairytale5571/bayraktar_bot/pkg/cache"
 	"github.com/fairytale5571/bayraktar_bot/pkg/database"
 	"github.com/fairytale5571/bayraktar_bot/pkg/discord"
 	"github.com/fairytale5571/bayraktar_bot/pkg/links"
@@ -11,6 +12,8 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"github.com/fairytale5571/bayraktar_bot/pkg/storage/redis"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router struct {
@@ -58,6 +61,7 @@ func (r *Router) mainRouter() {
 	r.router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusPermanentRedirect, links.UrlSite)
 	})
+	r.router.GET("/swag/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	authGroup := r.router.Group("/auth")
 	{
 		authGroup.GET("/steam", r.steam)
@@ -108,15 +112,12 @@ func (r *Router) site(c *gin.Context) {
 }
 
 func (r *Router) topPlayer(c *gin.Context) {
-
 }
 
 func (r *Router) topGang(c *gin.Context) {
-
 }
 
 func (r *Router) wanted(c *gin.Context) {
-
 }
 
 func (r *Router) adminRules(c *gin.Context) {

@@ -8,6 +8,13 @@ import (
 	"github.com/fairytale5571/bayraktar_bot/pkg/app"
 )
 
+// @title Bayraktar Bot
+// @version 1.0
+// @description API for Bayraktar bot
+
+// @host bot.rocket-rp.fun
+// @BasePath /
+
 func main() {
 	a, err := app.New()
 	if err != nil {

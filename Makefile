@@ -64,6 +64,10 @@ build:
 	${call colored,building...}
 	go build -o ${NAME} cmd/test/main.go
 
+swag:
+	${call colored,swag is running...}
+	swag init -g cmd/bayraktar_bot/main.go
+
 run:
 	${call colored,running...}
 	./${NAME}

@@ -2,11 +2,11 @@ package discord
 
 import (
 	"fmt"
-	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
+	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 )
 
 const (

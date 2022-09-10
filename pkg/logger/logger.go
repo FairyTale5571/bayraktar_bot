@@ -41,7 +41,6 @@ type Wrapper struct {
 }
 
 func New(service string) *Wrapper {
-
 	log := &Wrapper{lg: logrus.New()}
 	dlog, err := dislog.New(
 		// Sets which logging levels to send to the webhook

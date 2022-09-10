@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 type Embed struct {
@@ -38,11 +39,11 @@ type Embeds struct {
 }
 
 type TicketReport struct {
-	ChannelName string
+	ClosedAt    time.Time
+	OpenedAt    time.Time
 	ChannelID   string
 	AuthorID    string
 	ClosedBy    string
+	ChannelName string
 	Messages    []*discordgo.Message
-	OpenedAt    time.Time
-	ClosedAt    time.Time
 }

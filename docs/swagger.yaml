@@ -1,0 +1,9 @@
+basePath: /
+host: bot.rocket-rp.fun
+info:
+  contact: {}
+  description: API for Bayraktar bot
+  title: Bayraktar Bot
+  version: "1.0"
+paths: {}
+swagger: "2.0"

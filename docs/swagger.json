@@ -1,0 +1,12 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for Bayraktar bot",
+        "title": "Bayraktar Bot",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "bot.rocket-rp.fun",
+    "basePath": "/",
+    "paths": {}
+}

@@ -25,11 +25,11 @@ type Config struct {
 }
 
 type News struct {
-	ID          int
+	Published   time.Time
 	Title       string
 	Description string
 	Link        string
-	Published   time.Time
+	ID          int
 }
 
 type NewsArray struct {
@@ -41,10 +41,9 @@ func (n News) String() string {
 }
 
 func (n NewsArray) MakeArmaArray() string {
-	var res = "["
+	res := "["
 	for _, news := range n.News {
 		res += news.String() + ","
-
 	}
 	res = res[:len(res)-1]
 	res += "]"

@@ -1,9 +1,10 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/fairytale5571/bayraktar_bot/pkg/models"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func (r *Router) getNews() string {
