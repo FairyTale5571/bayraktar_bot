@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/discord/direct/{userid}": {
+        "/api/discord/direct/{userid}/{message}": {
             "post": {
                 "description": "send message to user",
                 "consumes": [
@@ -34,6 +34,71 @@ const docTemplate = `{
                         "type": "string",
                         "description": "user id",
                         "name": "user",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "X-Pass",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "embeds",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Embeds"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/discord/edit/{guild}/{channel}": {
+            "post": {
+                "description": "edit message sended by bot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discord"
+                ],
+                "summary": "Discord edit message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "guild id",
+                        "name": "guild",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "channel id",
+                        "name": "channel",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "message id",
+                        "name": "message",
                         "in": "path",
                         "required": true
                     },

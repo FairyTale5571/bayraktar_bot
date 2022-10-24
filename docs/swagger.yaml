@@ -96,7 +96,7 @@ info:
   title: Bayraktar Bot
   version: "1.0"
 paths:
-  /api/discord/direct/{userid}:
+  /api/discord/direct/{userid}/{message}:
     post:
       consumes:
       - application/json
@@ -128,6 +128,50 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Discord send to user
+      tags:
+      - discord
+  /api/discord/edit/{guild}/{channel}:
+    post:
+      consumes:
+      - application/json
+      description: edit message sended by bot
+      parameters:
+      - description: guild id
+        in: path
+        name: guild
+        required: true
+        type: string
+      - description: channel id
+        in: path
+        name: channel
+        required: true
+        type: string
+      - description: message id
+        in: path
+        name: message
+        required: true
+        type: string
+      - description: password
+        in: header
+        name: X-Pass
+        required: true
+        type: string
+      - description: embeds
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Embeds'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Discord edit message
       tags:
       - discord
   /api/discord/send/channel/{guild}/{channel}:
