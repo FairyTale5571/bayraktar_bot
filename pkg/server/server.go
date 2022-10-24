@@ -93,6 +93,7 @@ func (r *Router) mainRouter() {
 		{
 			apiDiscord.POST("/direct/:userid", r.sendDirect)
 			apiDiscord.POST("/channel/:guild/:channel", r.sendToChannel)
+			apiDiscord.POST("/edit/:guild/:channel/:message", r.editMessage)
 
 			apiDiscord.GET("/guilds", nil)
 			apiDiscord.GET("/channels/:guild", nil)

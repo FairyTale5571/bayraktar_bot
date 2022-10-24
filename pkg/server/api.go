@@ -63,7 +63,7 @@ func (r *Router) economy(c *gin.Context) {
 // @Param X-Pass header string true "password"
 // @Success 	200
 // @Failure 	500 			{object} 			models.Error
-// @Router /api/discord/send/channel/{guild}/{channel} [post]
+// @Router /api/discord/channel/{guild}/{channel} [post]
 func (r *Router) sendToChannel(c *gin.Context) {
 	if c.GetHeader(headerPass) != r.cfg.PostPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
@@ -107,7 +107,7 @@ func (r *Router) sendToChannel(c *gin.Context) {
 // @Param body body models.Embeds true "embeds"
 // @Success 	200
 // @Failure 	500 			{object} 			models.Error
-// @Router /api/discord/direct/{userid} [post]
+// @Router /api/discord/direct/{userid}/{message} [post]
 func (r *Router) sendDirect(c *gin.Context) {
 	if c.GetHeader(headerPass) != r.cfg.PostPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "pass not valid"})
@@ -134,6 +134,22 @@ func (r *Router) sendDirect(c *gin.Context) {
 		"message": "ok",
 	})
 	go r.bot.SendDirect(user, embeds)
+}
+
+// @Summary Discord edit message
+// @Description edit message sended by bot
+// @Tags discord
+// @Accept json
+// @Produce json
+// @Param guild path string true "guild id"
+// @Param channel path string true "channel id"
+// @Param message path string true "message id"
+// @Param X-Pass header string true "password"
+// @Param body body models.Embeds true "embeds"
+// @Success 	200
+// @Failure 	500 			{object} 			models.Error
+// @Router /api/discord/edit/{guild}/{channel} [post]
+func (r *Router) editMessage(c *gin.Context) {
 }
 
 func (r *Router) government(c *gin.Context) {

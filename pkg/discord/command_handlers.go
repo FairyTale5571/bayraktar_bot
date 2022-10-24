@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/fairytale5571/bayraktar_bot/pkg/helpers"
 )
 
 func (d *Discord) commands() map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -89,7 +90,7 @@ func (d *Discord) commandGetHim(s *discordgo.Session, i *discordgo.InteractionCr
 			{Name: "ФНИ:", Value: fmt.Sprintf("%s '%s' %s", _player.FirstName.String, _player.NickName.String, _player.LastName.String)},
 			{Name: "Дата регистрации:", Value: _player.InsertTime.Format("02.01.2006 15:04:05")},
 			{Name: "Дата последнего входа:", Value: _player.LastConnected.Format("02.01.2006 15:04:05")},
-			{Name: "Всего времени в игре:", Value: secondsToDate(_player.TotalTime)},
+			{Name: "Всего времени в игре:", Value: helpers.MinutesToDate(_player.TotalTime)},
 
 			{Name: "Наличных:", Value: fmt.Sprintf("$%d", _player.Cash), Inline: true},
 			{Name: "В банке:", Value: fmt.Sprintf("$%d", _player.Bank), Inline: true},

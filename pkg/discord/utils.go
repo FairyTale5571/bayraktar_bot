@@ -2,11 +2,10 @@ package discord
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fairytale5571/bayraktar_bot/pkg/errorUtils"
+	"github.com/fairytale5571/bayraktar_bot/pkg/helpers"
 	"github.com/fairytale5571/bayraktar_bot/pkg/links"
 )
 
@@ -99,11 +98,11 @@ func (d *Discord) getUserSteamId(userId string) (string, error) {
 
 func (d *Discord) getRandomVehicle() *Vehicles {
 	var veh Vehicles
-	rows, err := d.db.Query("SELECT d.classname, d.image, m.displayName FROM discord_boosters d " +
-		"INNER JOIN lk_mapobjects m ON m.classname = d.classname " +
-		"WHERE active = 1 " +
-		"ORDER BY RAND() " +
-		"LIMIT 1")
+	rows, err := d.db.Query(`SELECT d.classname, d.image, m.displayName FROM discord_boosters d 
+		INNER JOIN lk_mapobjects m ON m.classname = d.classname 
+		WHERE active = 1 
+		ORDER BY RAND() 
+		LIMIT 1`)
 	defer rows.Close() // nolint: not needed
 
 	if err != nil {
@@ -134,7 +133,7 @@ func (d *Discord) giveBoostPresent(channelId string, user *discordgo.User) {
 	vehicle := d.getRandomVehicle()
 	_, err = d.db.Exec("INSERT INTO vehicles SET servermap = 'RRpMap',classname = ?, pid = ?, plate = ?,"+
 		"type = 'Car', alive = '1', active = '0', inventory = '[[],0]',color = 'default', material = 'default', gear = '[]', damage = '0', hitpoints = '[]', baseprice = 10000, spname = 'none', parking = '[]', maxslots = 60, tuning_data = '[[\"nitro\"],[\"tracker\"],[\"breaking\"],[\"seatbelt\"]]', distance = '0', deleted_at = NULL, comment = ''",
-		player, vehicle.Classname, generatePlateNumber())
+		player, vehicle.Classname, helpers.GeneratePlateNumber())
 
 	if err != nil {
 		d.logger.Errorf("giveBoostPresent(): cant insert vehicle %s", err.Error())
@@ -334,30 +333,38 @@ func (d *Discord) printWelcome(userID, guildID string) {
 	}
 }
 
-var letters = []rune("ABEIKMHOPCTXZ")
-
-func randStringRune(n int) string {
-	b := make([]rune, n)
-	rand.Seed(time.Now().UnixNano())
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+func (d *Discord) printGiveCase(channelID string) {
+	embed := &discordgo.MessageEmbed{
+		Type:  discordgo.EmbedTypeImage,
+		Title: "Получи кейс!",
+		Description: "Чтобы получить кейс, тебе нужно привязать твой аккаунт к нашему серверу!\n" +
+			"Сделать это можно по кнопке ниже!\n",
+		Color: 0x00ff00,
+		Image: &discordgo.MessageEmbedImage{
+			URL: d.steam.GetItemLogo("1368860933"),
+		},
 	}
-	return string(b)
-}
-
-func randInt() int {
-	rand.Seed(time.Now().UnixNano())
-	min := 1000
-	max := 9999
-	return rand.Intn(max-min+1) + min
-}
-
-func generatePlateNumber() string {
-	return fmt.Sprintf("DS %d %v", randInt(), randStringRune(2))
-}
-
-func secondsToDate(seconds uint64) string {
-	return fmt.Sprintf("%d дней %d часов %d минут", seconds/86400, (seconds%86400)/3600, (seconds%3600)/60)
+	msg := &discordgo.MessageSend{
+		Embed: embed,
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label: "Привязать аккаунт",
+						URL:   d.steam.GetAuthLink("", ""),
+						Style: discordgo.LinkButton,
+						Emoji: discordgo.ComponentEmoji{
+							Name: "🔗",
+						},
+					},
+				},
+			},
+		},
+	}
+	_, err := d.ds.ChannelMessageSendComplex(channelID, msg)
+	if err != nil {
+		d.logger.Errorf("printGiveCase(): cant send message %s", err.Error())
+	}
 }
 
 func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageComponent) {
@@ -403,7 +410,7 @@ func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageCom
 				discordgo.Button{
 					Label: "Видео инструкция",
 					Style: discordgo.LinkButton,
-					URL:   "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+					URL:   links.UrlVideoInstruction,
 				},
 			},
 		},

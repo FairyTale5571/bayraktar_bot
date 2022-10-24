@@ -1,10 +1,10 @@
 package links
 
 const (
-	UrlServer   = "arma.rocket-rp.fun"
-	UrlTsServer = "ts.rocket-rp.fun"
-
-	UrlDiscord = "https://discord.com/invite/3eYKeKbpYE"
+	UrlServer           = "arma.rocket-rp.fun"
+	UrlTsServer         = "ts.rocket-rp.fun"
+	UrlVideoInstruction = "https://youtu.be/QlrLNQWh5wQ"
+	UrlDiscord          = "https://discord.com/invite/3eYKeKbpYE"
 
 	UrlLk        = "https://lk.rocket-rp.fun"
 	UrlSite      = "https://rocket-rp.fun"

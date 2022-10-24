@@ -38,16 +38,16 @@ type Government struct {
 }
 
 type Economy struct {
+	LastUpdate       time.Time
 	ResourceName     string
 	Localize         string
+	Influenced       string
 	Price            int
 	MaxPrice         int
+	RandomMax        int
+	RandomMin        int
 	MinPrice         int
 	DownPricePerItem float64
 	RandomDownPrice  bool
-	RandomMax        int
-	RandomMin        int
 	Illegal          bool
-	Influenced       string
-	LastUpdate       time.Time
 }
