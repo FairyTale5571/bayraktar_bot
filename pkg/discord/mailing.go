@@ -93,16 +93,17 @@ func (d *Discord) SendDirect(userID string, embeds models.Embeds) {
 	}
 }
 
-func (d *Discord) SendToChannel(guildID, channelID string, embeds models.Embeds) {
-	for _, v := range embeds.Embeds {
-		embed := d.serializeEmbed(v)
-		data := &discordgo.MessageSend{
-			Content: embeds.Content,
-			Embed:   embed,
-		}
-		_, err := d.ds.ChannelMessageSendComplex(channelID, data)
-		if err != nil {
-			d.logger.Errorf("SendToChannel(): Error while sending message: %s", err)
-		}
+func (d *Discord) SendToChannel(guildID, channelID string, embed models.Embeds) {
+	var embeds []*discordgo.MessageEmbed
+	for _, v := range embed.Embeds {
+		embeds = append(embeds, d.serializeEmbed(v))
+	}
+	data := &discordgo.MessageSend{
+		Content: embed.Content,
+		Embeds:  embeds,
+	}
+	_, err := d.ds.ChannelMessageSendComplex(channelID, data)
+	if err != nil {
+		d.logger.Errorf("SendToChannel(): Error while sending message: %s", err)
 	}
 }
