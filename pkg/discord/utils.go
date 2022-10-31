@@ -425,6 +425,7 @@ func (d *Discord) getHow2Play() (*discordgo.MessageEmbed, []discordgo.MessageCom
 			{Name: "Шаг 3", Value: "Скачайте клиент TeamSpeak и установите его.\n" + links.UrlTeamspeak},
 			{Name: "Шаг 4", Value: "Скачайте плагин Task Force Radio и установите его.\n" + d.cfg.URL + "/assets/files/task_force_radio.ts3_plugin"},
 			{Name: "Запуск", Value: "Запустите ArmA 3 в Steam, кликнув на кнопку играть.\n\nВ пункте \"Моды\" проверьте, включен ли мод **Rocket Life**, если отключен — включите его.\n\nНажмите на оранжевую кнопку играть в лаунчере ArmA 3.\n\nВ правом верхнем углы игры зайдите в свой профиль и укажите имя и фамилию вашего персонажа.\n\nЗайдите в браузер серверов и нажмите прямое подключение.\n\n" + links.UrlServer},
+			{Name: "Адреса подключений:", Value: "Сервер: " + links.UrlServer + "\n\nTeamSpeak: " + links.UrlTsServer + "\n\nЛичный кабинет: " + links.UrlLk},
 		},
 		Color: 0x8700ff,
 		Image: &discordgo.MessageEmbedImage{
