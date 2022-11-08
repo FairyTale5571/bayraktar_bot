@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -266,6 +267,22 @@ func (d *Discord) sendReport(report *models.TicketReport) {
 	})
 	if err != nil {
 		d.logger.Errorf("cant send message: %v", err)
+	}
+	fs, err := os.OpenFile(fmt.Sprintf("report_%s.txt", report.ChannelName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		d.logger.Errorf("cant open file: %v", err)
+		return
+	}
+	defer fs.Close()
+	for i := len(report.Messages) - 1; i >= 0; i-- {
+		if report.Messages[i].Content == "" {
+			continue
+		}
+		_, err = fs.WriteString(fmt.Sprintf("%s: %s\n", report.Messages[i].Author.Username, report.Messages[i].Content))
+		if err != nil {
+			d.logger.Errorf("cant write to file: %v", err)
+			return
+		}
 	}
 }
 

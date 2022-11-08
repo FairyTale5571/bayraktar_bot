@@ -50,6 +50,18 @@ func (d *Discord) serializeEmbeds(embeds models.Embeds) []*discordgo.MessageEmbe
 	return res
 }
 
+func (d *Discord) serializeComponent(component models.Component) *discordgo.MessageComponent {
+	return nil
+}
+
+func (d *Discord) serializeComponents(components models.Component) []*discordgo.MessageComponent {
+	var res []*discordgo.MessageComponent
+	for _, v := range components.Components {
+		res = append(res, d.serializeComponent(v))
+	}
+	return res
+}
+
 func (d *Discord) makeButtonLink() []discordgo.MessageComponent {
 	return []discordgo.MessageComponent{
 		discordgo.ActionsRow{

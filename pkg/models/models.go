@@ -22,14 +22,17 @@ type Config struct {
 	URL   string `env:"URL,required"`
 	PORT  string `env:"PORT" envDefault:"3000"`
 	Debug bool   `env:"DEBUG,required"`
+
+	MongoUri      string `env:"MONGO_URI,required"`
+	MongoDatabase string `env:"MONGO_DATABASE,required"`
 }
 
 type News struct {
-	Published   time.Time
 	Title       string
 	Description string
 	Link        string
 	ID          int
+	Published   time.Time
 }
 
 type NewsArray struct {

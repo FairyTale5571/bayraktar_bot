@@ -33,9 +33,28 @@ type Embed struct {
 	Color int `json:"color"`
 }
 
+type Component struct {
+	Type       int `json:"type"`
+	Components []struct {
+		Type     int    `json:"type"`
+		Style    int    `json:"style,omitempty"`
+		Url      string `json:"url,omitempty"`
+		Label    string `json:"label,omitempty"`
+		CustomId string `json:"custom_id,omitempty"`
+		Options  []struct {
+			Id          int64  `json:"id"`
+			Label       string `json:"label"`
+			Value       string `json:"value"`
+			Description string `json:"description"`
+		} `json:"options,omitempty"`
+		Placeholder string `json:"placeholder,omitempty"`
+	} `json:"components"`
+}
+
 type Embeds struct {
-	Content string  `json:"content"`
-	Embeds  []Embed `json:"embeds"`
+	Content    string      `json:"content"`
+	Components []Component `json:"components"`
+	Embeds     []Embed     `json:"embeds"`
 }
 
 type TicketReport struct {
