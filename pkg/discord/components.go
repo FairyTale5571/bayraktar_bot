@@ -95,7 +95,6 @@ func (d *Discord) componentLogin(s *discordgo.Session, i *discordgo.InteractionC
 					Color:       0x8700ff,
 				},
 			},
-			Content: "Дальнейшие инструкции отправлена вам в личные сообщения!",
 			Components: []discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
