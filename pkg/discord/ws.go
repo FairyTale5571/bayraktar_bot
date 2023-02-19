@@ -3,22 +3,36 @@ package discord
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/fairytale5571/bayraktar_bot/pkg/links"
-	"github.com/fairytale5571/bayraktar_bot/pkg/storage"
 )
 
-func (d *Discord) checkUpdate() {
-	var err error
-	text, id := d.steam.GetLatestUpdate("1368860933")
+func (d *Discord) isExistUpdate(id string) bool {
 
-	lastUpdate, _ := d.rdb.Get("lastUpdate_1368860933", storage.LastWsUpdate)
-	if lastUpdate == id {
-		return
-	}
-	err = d.rdb.Set("lastUpdate_1368860933", id, storage.LastWsUpdate)
+	rows, err := d.db.Query("SELECT id FROM steam_updates WHERE id = ?", id)
 	if err != nil {
-		d.logger.Errorf("checkUpdate(): Error setting last update: %s", err.Error())
+		d.logger.Errorf("isExistUpdate(): Error getting update: %s", err.Error())
+		return false
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return true
+	}
+	return false
+}
+
+func (d *Discord) addUpdate(id, update string) {
+	_, err := d.db.Exec("INSERT INTO `steam_updates` (`id`,`update`,`datetime`) VALUES (?,?,now())", id)
+	if err != nil {
+		d.logger.Errorf("addUpdate(): Error adding update: %s", err.Error())
 		return
 	}
+}
+
+func (d *Discord) checkUpdate() {
+	text, id := d.steam.GetLatestUpdate("1368860933")
+	if d.isExistUpdate(id) {
+		return
+	}
+	d.addUpdate(id, text)
 	if text == "" {
 		d.logger.Warnf("checkUpdate(): Empty update")
 		return

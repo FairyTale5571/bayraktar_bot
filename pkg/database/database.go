@@ -40,7 +40,7 @@ func New(uri string) (*DB, error) {
 
 func (db *DB) isMigrated(filename string) bool {
 	var version string
-	err := db.QueryRow("SELECT version FROM migrations WHERE version = ?", filename).Scan(&version)
+	err := db.QueryRow("SELECT version FROM discord_migrations WHERE version = ?", filename).Scan(&version)
 	if err != nil {
 		return false
 	}
