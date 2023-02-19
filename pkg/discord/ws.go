@@ -20,7 +20,7 @@ func (d *Discord) isExistUpdate(id string) bool {
 }
 
 func (d *Discord) addUpdate(id, update string) {
-	_, err := d.db.Exec("INSERT INTO `steam_updates` (`id`,`update`,`datetime`) VALUES (?,?,now())", id)
+	_, err := d.db.Exec("INSERT INTO `steam_updates` (`id`,`update`,`datetime`) VALUES (?,?,now())", id, update)
 	if err != nil {
 		d.logger.Errorf("addUpdate(): Error adding update: %s", err.Error())
 		return
